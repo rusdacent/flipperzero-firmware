@@ -33,6 +33,7 @@ int32_t floopper_bloopper(void* p);
 int32_t sd_filesystem(void* p);
 
 int32_t gui_test(void* p);
+int32_t interface_proto(void* p);
 
 const FlipperApplication FLIPPER_SERVICES[] = {
 #ifdef APP_CLI
@@ -141,6 +142,10 @@ const FlipperApplication FLIPPER_SERVICES[] = {
     {.app = floopper_bloopper, .name = "Floopper Bloopper", .stack_size = 1024, .icon = A_Games_14},
 #endif
 
+#ifdef APP_INTERFACE_PROTO
+    {.app = interface_proto, .name = "Interface poc", .stack_size = 1024, .icon = A_Games_14},
+#endif
+
 #ifdef APP_SDNFC
     {.app = sdnfc, .name = "sdnfc", .stack_size = 1024, .icon = A_Plugins_14},
 #endif
@@ -211,6 +216,10 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
 
 #ifdef BUILD_FLOOPPER_BLOOPPER
     {.app = floopper_bloopper, .name = "Floopper Bloopper", .stack_size = 1024, .icon = A_Games_14},
+#endif
+
+#ifdef BUILD_INTERFACE_PROTO
+    {.app = interface_proto, .name = "Interface poc", .stack_size = 1024, .icon = A_Games_14},
 #endif
 
 #ifdef BUILD_SDNFC
