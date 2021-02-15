@@ -66,4 +66,3 @@ One liner: `./flash_core1_main.sh`
 * Project website: [flipperzero.one](https://flipperzero.one)
 * Kickstarter page: [kickstarter.com](https://www.kickstarter.com/projects/flipper-devices/flipper-zero-tamagochi-for-hackers)
 * Forum: [forum.flipperzero.one](https://forum.flipperzero.one/)
-
