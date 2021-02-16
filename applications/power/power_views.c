@@ -123,7 +123,7 @@ void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
         canvas_draw_line(canvas, x + 17, y + 29, x + 19, y + 28);
 
         for(int i = 0; i < 50; ++i) {
-            if((i + 20) % (data->cnt + 10) == 3) {
+            if((i + 20) % (data->cnt + 15) == 3) {
                 canvas_draw_dot(canvas, i, y + 18);
             }
         }
@@ -135,7 +135,7 @@ void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
         canvas_draw_str(canvas, x + 46, y + 25, buf);
 
         for(int i = 80; i < 128; ++i) {
-            if(i % (data->cnt + 10) == 3) {
+            if(i % (data->cnt + 15) == 3) {
                 canvas_draw_dot(canvas, i, y + 28);
             }
         }
@@ -158,5 +158,5 @@ void power_info_draw_callback(Canvas* canvas, void* context) {
     draw_voltage(canvas, data, 72, 41);
     draw_health(canvas, data, 104, 41);
 
-    data->cnt = (data->cnt + 1) % 11;
+    data->cnt = (data->cnt + 1) % 3;
 }
