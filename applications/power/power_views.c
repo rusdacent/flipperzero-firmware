@@ -1,38 +1,162 @@
 #include "power_views.h"
 
+const uint8_t voltage_icon[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x80, 0x01, 0xC0, 0x01, 0xE0, 0x00, 0xF0, 0x07,
+    0x80, 0x03, 0xC0, 0x01, 0xC0, 0x00, 0x60, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const uint8_t health_icon[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x01, 0x40, 0x01, 0x40, 0x01, 0x78, 0x0F, 0x08, 0x08,
+    0x78, 0x0F, 0x40, 0x01, 0x40, 0x01, 0xC0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const uint8_t temp_icon[] = {
+    0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01, 0x40, 0x01,
+    0x40, 0x01, 0x20, 0x02, 0xE0, 0x03, 0xE0, 0x03, 0xC0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const uint8_t batt_icon[] = {
+    0x00, 0x00, 0x00, 0x00, 0x80, 0x01, 0xC0, 0x03, 0x20, 0x04, 0x20, 0x04, 0xA0, 0x05, 0x20, 0x04,
+    0xA0, 0x05, 0x20, 0x04, 0xA0, 0x05, 0x20, 0x04, 0xC0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+const uint8_t catbatt[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xE0, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x18, 0x03, 0x00, 0x00, 0x00, 0x00, 0x06, 0x0C, 0x00, 0x00, 0x00, 0x80, 0x11, 0x30,
+    0x00, 0x00, 0x00, 0x60, 0x28, 0xC0, 0x00, 0x00, 0x00, 0x18, 0x28, 0x00, 0x03, 0x00, 0x00, 0x0C,
+    0x28, 0x10, 0x0C, 0x00, 0x00, 0x34, 0x00, 0x28, 0x30, 0x00, 0x00, 0xC4, 0x00, 0x28, 0xC0, 0x00,
+    0x00, 0x04, 0x03, 0x28, 0xE0, 0x00, 0x00, 0x04, 0x0C, 0x00, 0x98, 0x00, 0x00, 0x14, 0x30, 0x00,
+    0x86, 0x00, 0x00, 0x64, 0xC0, 0x80, 0x81, 0x00, 0x00, 0x84, 0x01, 0x63, 0x80, 0x00, 0x00, 0x04,
+    0x40, 0x1C, 0x80, 0x00, 0x00, 0x04, 0x58, 0x08, 0x80, 0x00, 0x00, 0x04, 0x60, 0x08, 0x80, 0x00,
+    0x00, 0x04, 0xC0, 0x09, 0x80, 0x00, 0x00, 0x04, 0x40, 0x0A, 0x80, 0x00, 0x00, 0x42, 0x40, 0x08,
+    0x80, 0x00, 0x00, 0x41, 0x02, 0x08, 0x80, 0x00, 0x00, 0x87, 0x03, 0x08, 0x80, 0x00, 0x00, 0x19,
+    0x24, 0x08, 0x80, 0x00, 0x00, 0x61, 0x18, 0x08, 0x80, 0x00, 0x00, 0x86, 0x01, 0x08, 0x80, 0x00,
+    0x00, 0x18, 0x06, 0x08, 0x80, 0x00, 0x00, 0x60, 0x18, 0x08, 0x60, 0x00, 0x00, 0x80, 0x61, 0x08,
+    0x18, 0x00, 0x00, 0x00, 0x86, 0x05, 0x06, 0x00, 0x00, 0x00, 0x18, 0x82, 0x01, 0x00, 0x00, 0x00,
+    0x60, 0x62, 0x00, 0x00, 0x00, 0x00, 0x80, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+void draw_batt_percent(Canvas* canvas, PowerInfoModel* data, int x, int y) {
+    uint32_t p = data->charge;
+    char buf[20];
+    canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
+    canvas_draw_xbm(canvas, x, y, 16, 16, batt_icon);
+    sprintf(buf, "%ld%s", p, "%");
+    int len = canvas_string_width(canvas, buf) + 2;
+    canvas_set_color(canvas, ColorWhite);
+    canvas_draw_box(canvas, x - ((len / 9) + 1), y + 16, len, 6);
+    canvas_set_color(canvas, ColorBlack);
+    canvas_draw_str(canvas, x - (len / 9), y + 22, buf);
+}
+
+void draw_thermometer(Canvas* canvas, PowerInfoModel* data, int x, int y) {
+    uint32_t t = data->temperature_charger;
+    char buf[20];
+    canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
+    canvas_draw_xbm(canvas, x, y, 16, 16, temp_icon);
+    sprintf(buf, "%ld %s", t, "c");
+    int len = canvas_string_width(canvas, buf) + 2;
+    canvas_set_color(canvas, ColorWhite);
+    canvas_draw_box(canvas, x, y + 16, len, 6);
+    canvas_set_color(canvas, ColorBlack);
+    canvas_draw_dot(canvas, x + 11, y + 17);
+    canvas_draw_str(canvas, x + 1, y + 22, buf);
+}
+
+void draw_voltage(Canvas* canvas, PowerInfoModel* data, int x, int y) {
+    uint32_t v = data->voltage_gauge;
+    char buf[20];
+    canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
+    canvas_draw_xbm(canvas, x, y, 16, 16, voltage_icon);
+    sprintf(buf, "%ld V", v);
+    int len = canvas_string_width(canvas, buf) + 2;
+    canvas_set_color(canvas, ColorWhite);
+    canvas_draw_box(canvas, x, y + 16, len, 6);
+    canvas_set_color(canvas, ColorBlack);
+    canvas_draw_str(canvas, x + 1, y + 22, buf);
+}
+
+void draw_health(Canvas* canvas, PowerInfoModel* data, int x, int y) {
+    uint32_t h =
+        100 - (((data->capacity_full - data->capacity_remaining) / data->capacity_full) * 100);
+    char buf[20];
+    canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
+    canvas_draw_xbm(canvas, x, y, 16, 16, health_icon);
+    sprintf(buf, "%ld%s", h, "%");
+    int len = canvas_string_width(canvas, buf) + 2;
+    canvas_set_color(canvas, ColorWhite);
+    canvas_draw_box(canvas, x - ((len / 9) + 1), y + 16, len, 6);
+    canvas_set_color(canvas, ColorBlack);
+    canvas_draw_str(canvas, x - (len / 9), y + 22, buf);
+}
+
+void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
+    canvas_draw_xbm(canvas, x, y, 48, 48, catbatt);
+
+    canvas_draw_line(canvas, 0, y + 17, 50, y + 17);
+    canvas_draw_line(canvas, 0, y + 19, 50, y + 19);
+
+    canvas_draw_line(canvas, x + 35, y + 27, 128, y + 27);
+    canvas_draw_dot(canvas, x + 34, y + 28);
+    canvas_draw_line(canvas, x + 35, y + 29, 128, y + 29);
+
+    canvas_set_color(canvas, ColorWhite);
+    canvas_draw_dot(canvas, x + 39, y + 28);
+    canvas_set_color(canvas, ColorBlack);
+
+    if(data->current_charger > 0) {
+        char buf[20];
+        sprintf(buf, "%ld %s", (uint32_t)(data->current_charger * 1000), "mA");
+        canvas_draw_str(canvas, x - 30, y + 29, buf);
+
+        // redraw catbatt
+        canvas_set_color(canvas, ColorWhite);
+        canvas_draw_box(canvas, x + 14, y + 26, 5, 3);
+        canvas_draw_box(canvas, x + 18, y + 29, 5, 3);
+        canvas_set_color(canvas, ColorBlack);
+        canvas_draw_line(canvas, x + 15, y + 26, x + 16, y + 28);
+        canvas_draw_line(canvas, x + 17, y + 29, x + 19, y + 28);
+
+        for(int i = 0; i < 50; ++i) {
+            if((i + 20) % (data->cnt + 10) == 3) {
+                canvas_draw_dot(canvas, i, y + 18);
+            }
+        }
+    };
+
+    if(data->current_gauge != 0) {
+        char buf[32];
+        snprintf(buf, 32, "%ld %s", (int32_t)(data->current_gauge * 1000), "mA");
+        canvas_draw_str(canvas, x + 46, y + 25, buf);
+
+        for(int i = 80; i < 128; ++i) {
+            if(i % (data->cnt + 10) == 3) {
+                canvas_draw_dot(canvas, i, y + 28);
+            }
+        }
+    };
+};
+
 void power_info_draw_callback(Canvas* canvas, void* context) {
     PowerInfoModel* data = context;
 
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
-    canvas_set_font(canvas, FontPrimary);
-    canvas_draw_str(canvas, 2, 10, "Power state:");
 
-    char buffer[64];
+    draw_battery(canvas, data, 40, 4);
+
     canvas_set_font(canvas, FontSecondary);
-    snprintf(
-        buffer,
-        64,
-        "Current: %ld/%ldmA",
-        (int32_t)(data->current_gauge * 1000),
-        (int32_t)(data->current_charger * 1000));
-    canvas_draw_str(canvas, 5, 22, buffer);
-    snprintf(
-        buffer,
-        64,
-        "Voltage: %ld/%ldmV",
-        (uint32_t)(data->voltage_gauge * 1000),
-        (uint32_t)(data->voltage_charger * 1000));
-    canvas_draw_str(canvas, 5, 32, buffer);
-    snprintf(buffer, 64, "Charge: %ld%%", (uint32_t)(data->charge));
-    canvas_draw_str(canvas, 5, 42, buffer);
-    snprintf(buffer, 64, "Capacity: %ld of %ldmAh", data->capacity_remaining, data->capacity_full);
-    canvas_draw_str(canvas, 5, 52, buffer);
-    snprintf(
-        buffer,
-        64,
-        "Temperature: %ld/%ldC",
-        (uint32_t)(data->temperature_gauge),
-        (uint32_t)(data->temperature_charger));
-    canvas_draw_str(canvas, 5, 62, buffer);
+    canvas_draw_str(canvas, 0, 8, "Power state:");
+
+    draw_batt_percent(canvas, data, 8, 41);
+    draw_thermometer(canvas, data, 40, 41);
+    draw_voltage(canvas, data, 72, 41);
+    draw_health(canvas, data, 104, 41);
+
+    data->cnt = (data->cnt + 1) % 11;
 }
