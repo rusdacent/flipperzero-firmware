@@ -72,7 +72,7 @@ void draw_voltage(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     char buf[20];
     canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
     canvas_draw_xbm(canvas, x, y, 16, 16, voltage_icon);
-    sprintf(buf, "%ld.%01ld V", v, (v*10)%10);
+    sprintf(buf, "%ld.%01ld V", v, (v * 10) % 10);
     canvas_set_color(canvas, ColorWhite);
     canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
