@@ -49,9 +49,9 @@ void draw_batt_percent(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     sprintf(buf, "%ld%s", p, "%");
     int len = canvas_string_width(canvas, buf) + 2;
     canvas_set_color(canvas, ColorWhite);
-    canvas_draw_box(canvas, x - ((len / 9) + 1), y + 16, len, 6);
+    canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
-    canvas_draw_str(canvas, x - (len / 9), y + 22, buf);
+    canvas_draw_str(canvas, x - (len / 8), y + 22, buf);
 }
 
 void draw_thermometer(Canvas* canvas, PowerInfoModel* data, int x, int y) {
@@ -60,9 +60,8 @@ void draw_thermometer(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
     canvas_draw_xbm(canvas, x, y, 16, 16, temp_icon);
     sprintf(buf, "%ld %s", t, "c");
-    int len = canvas_string_width(canvas, buf) + 2;
     canvas_set_color(canvas, ColorWhite);
-    canvas_draw_box(canvas, x, y + 16, len, 6);
+    canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
     canvas_draw_dot(canvas, x + 11, y + 17);
     canvas_draw_str(canvas, x + 1, y + 22, buf);
@@ -73,12 +72,11 @@ void draw_voltage(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     char buf[20];
     canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
     canvas_draw_xbm(canvas, x, y, 16, 16, voltage_icon);
-    sprintf(buf, "%ld V", v);
-    int len = canvas_string_width(canvas, buf) + 2;
+    sprintf(buf, "%ld.%01ld V", v, (v*10)%10);
     canvas_set_color(canvas, ColorWhite);
-    canvas_draw_box(canvas, x, y + 16, len, 6);
+    canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
-    canvas_draw_str(canvas, x + 1, y + 22, buf);
+    canvas_draw_str(canvas, x - 2, y + 22, buf);
 }
 
 void draw_health(Canvas* canvas, PowerInfoModel* data, int x, int y) {
@@ -90,9 +88,9 @@ void draw_health(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     sprintf(buf, "%ld%s", h, "%");
     int len = canvas_string_width(canvas, buf) + 2;
     canvas_set_color(canvas, ColorWhite);
-    canvas_draw_box(canvas, x - ((len / 9) + 1), y + 16, len, 6);
+    canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
-    canvas_draw_str(canvas, x - (len / 9), y + 22, buf);
+    canvas_draw_str(canvas, x - (len / 8), y + 22, buf);
 }
 
 void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
