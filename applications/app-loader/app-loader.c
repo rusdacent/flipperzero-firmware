@@ -145,9 +145,6 @@ int32_t app_loader(void* p) {
             menu_item_add(
                 menu,
                 menu_item_alloc_function("Passport", assets_icons_get(A_Passport_14), NULL, NULL));
-            menu_item_add(
-                menu,
-                menu_item_alloc_function("Settings", assets_icons_get(A_Settings_14), NULL, NULL));
         });
 
     // plugins

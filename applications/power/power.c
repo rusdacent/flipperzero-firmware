@@ -12,6 +12,8 @@
 #include <gui/view.h>
 #include <gui/view_dispatcher.h>
 #include <gui/modules/dialog.h>
+#include <gui/modules/submenu.h>
+
 #include <assets_icons.h>
 #include <cli/cli.h>
 #include <stm32wbxx.h>
@@ -30,7 +32,9 @@ struct Power {
 
     ValueMutex* menu_vm;
     Cli* cli;
+
     MenuItem* menu;
+    Submenu* power_menu;
 };
 
 void power_draw_usb_callback(Canvas* canvas, void* context) {
@@ -92,6 +96,11 @@ void power_menu_info_callback(void* context) {
     view_dispatcher_switch_to_view(power->view_dispatcher, PowerViewInfo);
 }
 
+void power_submenu_callback(void* context) {
+    Power* power = context;
+    view_dispatcher_switch_to_view(power->view_dispatcher, PowerViewSubmenu);
+}
+
 Power* power_alloc() {
     Power* power = furi_alloc(sizeof(Power));
 
@@ -99,19 +108,22 @@ Power* power_alloc() {
 
     power->cli = furi_record_open("cli");
 
-    power->menu = menu_item_alloc_menu("Power", NULL);
+    power->menu = menu_item_alloc_menu("Settings", assets_icons_get(A_Settings_14));
+
     menu_item_subitem_add(
-        power->menu, menu_item_alloc_function("Off", NULL, power_menu_off_callback, power));
-    menu_item_subitem_add(
-        power->menu, menu_item_alloc_function("Reset", NULL, power_menu_reset_callback, power));
-    menu_item_subitem_add(
+        power->menu, menu_item_alloc_function("Power", NULL, power_submenu_callback, power));
+
+    menu_item_subitem_add(power->menu, menu_item_alloc_function("Brightness", NULL, NULL, power));
+    menu_item_subitem_add(power->menu, menu_item_alloc_function("Volume", NULL, NULL, power));
+    menu_item_subitem_add(power->menu, menu_item_alloc_function("Vibro", NULL, NULL, power));
+
+    /* menu_item_subitem_add(
         power->menu,
         menu_item_alloc_function("Enable OTG", NULL, power_menu_enable_otg_callback, power));
     menu_item_subitem_add(
         power->menu,
         menu_item_alloc_function("Disable OTG", NULL, power_menu_disable_otg_callback, power));
-    menu_item_subitem_add(
-        power->menu, menu_item_alloc_function("Info", NULL, power_menu_info_callback, power));
+    */
 
     power->view_dispatcher = view_dispatcher_alloc();
     power->info_view = view_alloc();
@@ -119,6 +131,14 @@ Power* power_alloc() {
     view_set_draw_callback(power->info_view, power_info_draw_callback);
     view_set_previous_callback(power->info_view, power_info_back_callback);
     view_dispatcher_add_view(power->view_dispatcher, PowerViewInfo, power->info_view);
+
+    power->power_menu = submenu_alloc();
+    view_dispatcher_add_view(
+        power->view_dispatcher, PowerViewSubmenu, submenu_get_view(power->power_menu));
+    view_set_previous_callback(submenu_get_view(power->power_menu), power_info_back_callback);
+    submenu_add_item(power->power_menu, "Power info", power_menu_info_callback, power);
+    submenu_add_item(power->power_menu, "Power off", power_menu_off_callback, power);
+    submenu_add_item(power->power_menu, "Reboot", power_menu_reset_callback, power);
 
     power->dialog = dialog_alloc();
     dialog_set_context(power->dialog, power);

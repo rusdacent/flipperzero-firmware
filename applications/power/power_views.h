@@ -6,7 +6,7 @@
 #include <gui/canvas.h>
 #include <gui/view.h>
 
-typedef enum { PowerViewInfo, PowerViewDialog } PowerView;
+typedef enum { PowerViewInfo, PowerViewDialog, PowerViewSubmenu } PowerView;
 
 typedef struct {
     float current_charger;
