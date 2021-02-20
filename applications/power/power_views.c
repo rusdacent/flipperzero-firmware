@@ -112,7 +112,7 @@ void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
         canvas_draw_str(canvas, x + 60, y + 10, "Current charge:");
         canvas_draw_str(canvas, x + 73, y + 23, buf);
     } else if(data->current_gauge != 0) {
-        snprintf(buf, 32, "%ld %s", (int32_t)(data->current_gauge * 1000), "mA");
+        snprintf(buf, 32, "%ld %s", (int32_t)(-data->current_gauge * 1000), "mA");
         canvas_draw_str(canvas, x + 60, y + 10, "Current draw:");
         canvas_draw_str(canvas, x + 70, y + 23, buf);
     } else {
