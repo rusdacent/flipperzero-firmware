@@ -124,6 +124,7 @@ void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
     } else if(charge_current != 0 || drain_current != 0) {
         header_offset = 6;
         sprintf(header, "%s", "...");
+        memset(value, 0, strlen(value));
     } else {
         header_offset = 6;
         sprintf(header, "%s", "Charged!");
@@ -151,7 +152,7 @@ void power_info_draw_callback(Canvas* canvas, void* context) {
     char health[20];
 
     sprintf(batt_level, "%ld%s", (uint32_t)data->charge, "%");
-    sprintf(temperature, " %ld %s", (uint32_t)data->temperature_charger, "C");
+    sprintf(temperature, "%ld %s", (uint32_t)data->temperature_gauge, "C");
     sprintf(
         voltage,
         "%ld.%01ld V",
