@@ -22,7 +22,6 @@ typedef struct {
     float temperature_gauge;
 
     uint8_t charge;
-    uint8_t cnt;
 
 } PowerInfoModel;
 

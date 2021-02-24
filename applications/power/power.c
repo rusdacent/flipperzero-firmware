@@ -242,7 +242,10 @@ int32_t power_task(void* p) {
 
         view_port_update(power->battery_view_port);
         view_port_enabled_set(power->usb_view_port, api_hal_power_is_charging());
-        osDelay(1024);
+        api_hal_light_set(
+            LightRed, api_hal_power_get_battery_current(ApiHalPowerICCharger) != 0 ? 0xFF : 0x00);
+
+        osDelay(256);
     }
 
     return 0;

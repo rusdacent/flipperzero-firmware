@@ -1,4 +1,5 @@
 #include "power_views.h"
+#include "api-hal.h"
 
 const uint8_t voltage_icon[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x80, 0x01, 0xC0, 0x01, 0xE0, 0x00, 0xF0, 0x07,
@@ -85,21 +86,27 @@ const uint8_t battery_low_power[] = {
 };
 
 void draw_stat(Canvas* canvas, int x, int y, const uint8_t* icon, char* val) {
-    int len = canvas_string_width(canvas, val) + 2;
+    int16_t text_pos = (16 - canvas_string_width(canvas, val)) / 2;
     canvas_draw_frame(canvas, x - 7, y + 7, 30, 13);
     canvas_draw_xbm(canvas, x, y, 16, 16, icon);
     canvas_set_color(canvas, ColorWhite);
     canvas_draw_box(canvas, x - 4, y + 16, 24, 6);
     canvas_set_color(canvas, ColorBlack);
-    canvas_draw_str(canvas, x - (len / 8), y + 22, val);
+    canvas_draw_str(canvas, x + text_pos, y + 22, val);
 };
 
 void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
-    char buf[20];
+    char header[20];
+    char value[20];
+    int8_t header_offset = 0;
 
-    if(data->current_charger > 0) {
+    int32_t drain_current = -data->current_gauge * 1000;
+    uint32_t charge_current = data->current_charger * 1000;
+
+    // battery
+    if(charge_current > 0) {
         canvas_draw_xbm(canvas, x, y, 52, 28, battery_charging);
-    } else if(data->current_gauge > 300) {
+    } else if(drain_current > 300) {
         canvas_draw_xbm(canvas, x, y, 52, 28, battery_over_consumption);
     } else if(data->charge < 10) {
         canvas_draw_xbm(canvas, x, y, 52, 28, battery_low_power);
@@ -107,18 +114,29 @@ void draw_battery(Canvas* canvas, PowerInfoModel* data, int x, int y) {
         canvas_draw_xbm(canvas, x, y, 52, 28, battery_normal);
     }
 
-    if(data->current_charger > 0) {
-        sprintf(buf, "%ld %s", (uint32_t)(data->current_charger * 1000), "mA");
-        canvas_draw_str(canvas, x + 60, y + 10, "Current charge:");
-        canvas_draw_str(canvas, x + 73, y + 23, buf);
-    } else if(data->current_gauge != 0) {
-        snprintf(buf, 32, "%ld %s", (int32_t)(-data->current_gauge * 1000), "mA");
-        canvas_draw_str(canvas, x + 60, y + 10, "Current draw:");
-        canvas_draw_str(canvas, x + 70, y + 23, buf);
+    // text
+    if(charge_current > 0) {
+        sprintf(header, "%s", "Charging:");
+        sprintf(value, "%ld %s", charge_current, "mA");
+    } else if(drain_current > 0) {
+        sprintf(header, "%s", "Consumption:");
+        snprintf(value, 32, "%ld %s", drain_current, "mA");
+    } else if(charge_current != 0 || drain_current != 0) {
+        header_offset = 6;
+        sprintf(header, "%s", "...");
     } else {
-        canvas_draw_str(canvas, x + 70, y + 17, "Charged!");
+        header_offset = 6;
+        sprintf(header, "%s", "Charged!");
+        memset(value, 0, strlen(value));
     }
+
+    int16_t header_pos = (60 - canvas_string_width(canvas, header)) / 2;
+    int16_t text_pos = (60 - canvas_string_width(canvas, value)) / 2;
+
+    canvas_draw_str(canvas, 60 + header_pos, y + 10 + header_offset, header);
+    canvas_draw_str(canvas, 60 + text_pos, y + 24, value);
 };
+
 void power_info_draw_callback(Canvas* canvas, void* context) {
     PowerInfoModel* data = context;
 
@@ -149,6 +167,4 @@ void power_info_draw_callback(Canvas* canvas, void* context) {
     draw_stat(canvas, 40, 41, temp_icon, temperature);
     draw_stat(canvas, 72, 41, voltage_icon, voltage);
     draw_stat(canvas, 104, 41, health_icon, health);
-
-    data->cnt = (data->cnt + 1) % 3;
 }
