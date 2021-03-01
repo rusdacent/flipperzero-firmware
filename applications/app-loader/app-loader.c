@@ -132,6 +132,10 @@ int32_t app_loader(void* p) {
             }
         });
 
+    AppLoaderContext* passport = furi_alloc(sizeof(AppLoaderContext));
+    passport->state = &state;
+    passport->app = &FLIPPER_PASSPORT;
+
     with_value_mutex(
         menu_mutex, (Menu * menu) {
             menu_item_add(
@@ -144,7 +148,7 @@ int32_t app_loader(void* p) {
                 menu, menu_item_alloc_function("Games", assets_icons_get(A_Games_14), NULL, NULL));
             menu_item_add(
                 menu,
-                menu_item_alloc_function("Passport", assets_icons_get(A_Passport_14), NULL, NULL));
+                menu_item_alloc_function("Passport", assets_icons_get(A_Passport_14), app_loader_menu_callback, passport));
         });
 
     // plugins
