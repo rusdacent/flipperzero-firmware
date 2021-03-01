@@ -148,7 +148,11 @@ int32_t app_loader(void* p) {
                 menu, menu_item_alloc_function("Games", assets_icons_get(A_Games_14), NULL, NULL));
             menu_item_add(
                 menu,
-                menu_item_alloc_function("Passport", assets_icons_get(A_Passport_14), app_loader_menu_callback, passport));
+                menu_item_alloc_function(
+                    "Passport",
+                    assets_icons_get(A_Passport_14),
+                    app_loader_menu_callback,
+                    passport));
         });
 
     // plugins

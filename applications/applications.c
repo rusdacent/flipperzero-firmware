@@ -233,9 +233,11 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
 };
 
 #ifdef BUILD_PASSPORT
-    const FlipperApplication FLIPPER_PASSPORT = {
-        .app = passport, .name = "Passport" , .stack_size = 1024,
-    };
+const FlipperApplication FLIPPER_PASSPORT = {
+    .app = passport,
+    .name = "Passport",
+    .stack_size = 1024,
+};
 #endif
 
 const size_t FLIPPER_PLUGINS_COUNT = sizeof(FLIPPER_PLUGINS) / sizeof(FlipperApplication);
