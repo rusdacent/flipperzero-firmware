@@ -1,5 +1,6 @@
 #include <furi.h>
 #include <gui/gui.h>
+#include <api-hal-version.h>
 
 const uint8_t passport_left[] = {
     0x3C, 0x02, 0x19, 0x25, 0x25, 0x19, 0x01, 0x01, 0x05, 0x09, 0x11, 0x25, 0x09, 0x11, 0x25, 0x09,
@@ -93,7 +94,7 @@ static void render_callback(Canvas* canvas, void* ctx) {
     canvas_draw_line(canvas, 59, 31, 124, 31);
     canvas_draw_line(canvas, 59, 44, 124, 44);
 
-    canvas_draw_str(canvas, 59, 15, "H3ck_D0lph1n");
+    canvas_draw_str(canvas, 59, 15, api_hal_version_get_name_ptr());
     canvas_draw_str(canvas, 59, 28, "Mood: Angry");
     canvas_draw_str(canvas, 59, 41, "Level: 14");
 
