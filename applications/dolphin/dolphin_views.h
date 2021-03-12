@@ -13,6 +13,7 @@ typedef enum {
     DolphinViewIdleUp,
     DolphinViewIdleDown,
     DolphinViewHwMismatch,
+    DolphinViewLocked,
 } DolphinViewIdle;
 
 typedef struct {
@@ -27,6 +28,8 @@ typedef struct {
     uint32_t butthurt;
 } DolphinViewIdleUpModel;
 
+
+void dolphin_view_locked_draw(Canvas* canvas, void* model);
 void dolphin_view_idle_main_draw(Canvas* canvas, void* model);
 bool dolphin_view_idle_main_input(InputEvent* event, void* context);
 

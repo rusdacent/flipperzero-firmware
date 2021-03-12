@@ -54,6 +54,14 @@ void dolphin_view_first_start_draw(Canvas* canvas, void* model) {
         elements_frame(canvas, 2, 10 - font_height, width - 56 - 4, font_height * 4 + 4);
     }
 }
+void dolphin_view_locked_draw(Canvas* canvas, void* model) {
+    canvas_clear(canvas);
+    canvas_set_color(canvas, ColorBlack);
+    canvas_draw_icon_name(
+        canvas, canvas_width(canvas) - 80, canvas_height(canvas) - 60 + 6, I_Flipper_young_80x60);
+    canvas_set_font(canvas, FontSecondary);
+    canvas_draw_str(canvas, 5, 32, "LOCKED");
+}
 
 void dolphin_view_idle_main_draw(Canvas* canvas, void* model) {
     canvas_clear(canvas);
