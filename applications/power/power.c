@@ -164,21 +164,15 @@ void power_free(Power* power) {
 }
 
 void power_cli_poweroff(string_t args, void* context) {
-    printf("Poweroff in 3 seconds");
-    osDelay(3000);
     api_hal_power_off();
 }
 
 void power_cli_reset(string_t args, void* context) {
-    printf("NVIC System Reset in 3 seconds");
-    osDelay(3000);
     NVIC_SystemReset();
 }
 
 void power_cli_dfu(string_t args, void* context) {
-    printf("NVIC System Reset to DFU mode in 3 seconds");
     api_hal_boot_set_mode(ApiHalBootModeDFU);
-    osDelay(3000);
     NVIC_SystemReset();
 }
 
@@ -219,14 +213,13 @@ int32_t power_task(void* p) {
     with_value_mutex(
         power->menu_vm, (Menu * menu) { menu_item_add(menu, power->menu); });
 
-    api_hal_power_init();
-
     furi_record_create("power", power);
 
     while(1) {
         with_view_model(
             power->info_view, (PowerInfoModel * model) {
                 model->charge = api_hal_power_get_pct();
+                model->health = api_hal_power_get_bat_health_pct();
                 model->capacity_remaining = api_hal_power_get_battery_remaining_capacity();
                 model->capacity_full = api_hal_power_get_battery_full_capacity();
                 model->current_charger = api_hal_power_get_battery_current(ApiHalPowerICCharger);

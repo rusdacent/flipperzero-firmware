@@ -31,10 +31,12 @@ int32_t music_player(void* p);
 int32_t sdnfc(void* p);
 int32_t floopper_bloopper(void* p);
 int32_t sd_filesystem(void* p);
+int32_t app_subghz(void* p);
 
 int32_t gui_test(void* p);
 int32_t interface_proto(void* p);
 int32_t passport(void* p);
+int32_t keypad_test(void* p);
 
 const FlipperApplication FLIPPER_SERVICES[] = {
 #ifdef APP_CLI
@@ -152,7 +154,15 @@ const FlipperApplication FLIPPER_SERVICES[] = {
 #endif
 
 #ifdef APP_GUI_TEST
-    {.app = gui_test, .name = "gui_test", .icon = A_Plugins_14},
+    {.app = gui_test, .name = "gui_test", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef APP_SUBGHZ
+    {.app = app_subghz, .name = "app_subghz", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef APP_KEYPAD_TEST
+    {.app = keypad_test, .name = "keypad_test", .icon = A_Plugins_14},
 #endif
 };
 
@@ -228,8 +238,17 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
 #endif
 
 #ifdef BUILD_GUI_TEST
-    {.app = gui_test, .name = "gui_test", .icon = A_Plugins_14},
+    {.app = gui_test, .name = "gui_test", .stack_size = 1024, .icon = A_Plugins_14},
 #endif
+
+#ifdef BUILD_SUBGHZ
+    {.app = app_subghz, .name = "app_subghz", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef BUILD_KEYPAD_TEST
+    {.app = keypad_test, .name = "keypad_test", .icon = A_Plugins_14},
+#endif
+
 };
 
 #ifdef BUILD_PASSPORT

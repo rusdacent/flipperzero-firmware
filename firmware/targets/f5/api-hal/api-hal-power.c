@@ -6,6 +6,7 @@
 #include <stm32wbxx_ll_pwr.h>
 #include <stm32wbxx_ll_hsem.h>
 #include <stm32wbxx_ll_cortex.h>
+#include <stm32wbxx_ll_gpio.h>
 
 #include <main.h>
 #include <hw_conf.h>
@@ -15,8 +16,7 @@
 volatile uint32_t api_hal_power_insomnia = 1;
 
 void HAL_RCC_CSSCallback(void) {
-    LL_RCC_ForceBackupDomainReset();
-    LL_RCC_ReleaseBackupDomainReset();
+    // TODO: notify user about issue with HSE
     NVIC_SystemReset();
 }
 
@@ -64,7 +64,7 @@ void api_hal_power_deep_sleep() {
     LL_HSEM_ReleaseLock(HSEM, CFG_HW_RCC_SEMID, 0);
 
     // Prepare deep sleep
-    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
     LL_LPM_EnableDeepSleep();
 
 #if defined ( __CC_ARM)
@@ -88,6 +88,10 @@ void api_hal_power_deep_sleep() {
 
 uint8_t api_hal_power_get_pct() {
     return bq27220_get_state_of_charge();
+}
+
+uint8_t api_hal_power_get_bat_health_pct() {
+    return bq27220_get_state_of_health();
 }
 
 bool api_hal_power_is_charging() {
@@ -175,9 +179,9 @@ void api_hal_power_dump_state(string_t buffer) {
         );
         // Voltage and current info
         string_cat_printf(buffer,
-            "bq27220: Full capacity: %dmAh, Remaining capacity: %dmAh, State of Charge: %d%%\r\n",
+            "bq27220: Full capacity: %dmAh, Remaining capacity: %dmAh, State of Charge: %d%%, State of health: %d%%\r\n",
             bq27220_get_full_charge_capacity(), bq27220_get_remaining_capacity(),
-            bq27220_get_state_of_charge()
+            bq27220_get_state_of_charge(), bq27220_get_state_of_health()
         );
         string_cat_printf(buffer,
             "bq27220: Voltage: %dmV, Current: %dmA, Temperature: %dC\r\n",
@@ -191,4 +195,12 @@ void api_hal_power_dump_state(string_t buffer) {
         bq25896_get_vbat_voltage(), bq25896_get_vbat_current(),
         bq25896_get_ntc_mpct()
     );
+}
+
+void api_hal_power_enable_external_3_3v(){
+    LL_GPIO_SetOutputPin(PERIPH_POWER_GPIO_Port, PERIPH_POWER_Pin);
+}
+
+void api_hal_power_disable_external_3_3v(){
+    LL_GPIO_ResetOutputPin(PERIPH_POWER_GPIO_Port, PERIPH_POWER_Pin);
 }

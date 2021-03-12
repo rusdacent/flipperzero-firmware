@@ -9,6 +9,8 @@
 #include <stm32wbxx_ll_gpio.h>
 #include <stm32wbxx_hal_flash.h>
 
+#include <api-hal.h>
+
 // Boot request enum
 #define BOOT_REQUEST_NONE 0x00000000
 #define BOOT_REQUEST_DFU 0xDF00B000
@@ -21,45 +23,35 @@
 #define BOOT_USB_DP_PIN LL_GPIO_PIN_12
 #define BOOT_USB_PIN (BOOT_USB_DM_PIN | BOOT_USB_DP_PIN)
 
-void target_led_set_red(uint8_t value) {
-}
-
-void target_led_set_green(uint8_t value) {
-}
-
-void target_led_set_blue(uint8_t value) {
-}
-
-void target_led_set_backlight(uint8_t value) {
-}
+#define RTC_CLOCK_IS_READY() (LL_RCC_LSE_IsReady() && LL_RCC_LSI1_IsReady())
 
 void target_led_control(char* c) {
-    target_led_set_red(0x00);
-    target_led_set_green(0x00);
-    target_led_set_blue(0x00);
+    api_hal_light_set(LightRed, 0x00);
+    api_hal_light_set(LightGreen, 0x00);
+    api_hal_light_set(LightBlue, 0x00);
     do {
         if(*c == 'R') {
-            target_led_set_red(0xFF);
+            api_hal_light_set(LightRed, 0xFF);
         } else if(*c == 'G') {
-            target_led_set_green(0xFF);
+            api_hal_light_set(LightGreen, 0xFF);
         } else if(*c == 'B') {
-            target_led_set_blue(0xFF);
+            api_hal_light_set(LightBlue, 0xFF);
         } else if(*c == '.') {
             LL_mDelay(125);
-            target_led_set_red(0x00);
-            target_led_set_green(0x00);
-            target_led_set_blue(0x00);
+            api_hal_light_set(LightRed, 0x00);
+            api_hal_light_set(LightGreen, 0x00);
+            api_hal_light_set(LightBlue, 0x00);
             LL_mDelay(125);
         } else if(*c == '-') {
             LL_mDelay(250);
-            target_led_set_red(0x00);
-            target_led_set_green(0x00);
-            target_led_set_blue(0x00);
+            api_hal_light_set(LightRed, 0x00);
+            api_hal_light_set(LightGreen, 0x00);
+            api_hal_light_set(LightBlue, 0x00);
             LL_mDelay(250);
         } else if(*c == '|') {
-            target_led_set_red(0x00);
-            target_led_set_green(0x00);
-            target_led_set_blue(0x00);
+            api_hal_light_set(LightRed, 0x00);
+            api_hal_light_set(LightGreen, 0x00);
+            api_hal_light_set(LightBlue, 0x00);
         }
         c++;
     } while(*c != 0);
@@ -73,6 +65,7 @@ void clock_init() {
 void gpio_init() {
     LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
     LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+    LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
     // USB D+
     LL_GPIO_SetPinMode(BOOT_USB_PORT, BOOT_USB_DP_PIN, LL_GPIO_MODE_OUTPUT);
     LL_GPIO_SetPinSpeed(BOOT_USB_PORT, BOOT_USB_DP_PIN, LL_GPIO_SPEED_FREQ_VERY_HIGH);
@@ -89,17 +82,19 @@ void gpio_init() {
 void rtc_init() {
     // LSE and RTC
     LL_PWR_EnableBkUpAccess();
-    if(!LL_RCC_LSE_IsReady()) {
+    if(!RTC_CLOCK_IS_READY()) {
+        // Start LSI1 needed for CSS
+        LL_RCC_LSI1_Enable();
         // Try to start LSE normal way
         LL_RCC_LSE_SetDriveCapability(LL_RCC_LSEDRIVE_MEDIUMLOW);
         LL_RCC_LSE_Enable();
         uint32_t c = 0;
-        while(!LL_RCC_LSE_IsReady() && c < 200) {
+        while(!RTC_CLOCK_IS_READY() && c < 200) {
             LL_mDelay(10);
             c++;
         }
         // Plan B: reset backup domain
-        if(!LL_RCC_LSE_IsReady()) {
+        if(!RTC_CLOCK_IS_READY()) {
             target_led_control("-R.R.R.");
             LL_RCC_ForceBackupDomainReset();
             LL_RCC_ReleaseBackupDomainReset();
@@ -107,6 +102,8 @@ void rtc_init() {
         }
         // Set RTC domain clock to LSE
         LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSE);
+        // Enable LSE CSS
+        LL_RCC_LSE_EnableCSS();
     }
     // Enable clocking
     LL_RCC_EnableRTC();
@@ -122,6 +119,8 @@ void usb_wire_reset() {
 void target_init() {
     clock_init();
     gpio_init();
+    api_hal_init();
+    target_led_control("RGB");
     rtc_init();
     usb_wire_reset();
 

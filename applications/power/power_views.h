@@ -22,7 +22,11 @@ typedef struct {
     float temperature_gauge;
 
     uint8_t charge;
+<<<<<<< HEAD
 
+=======
+    uint8_t health;
+>>>>>>> fc12f91a64c204711020ace5cb5f1d7e4a085acc
 } PowerInfoModel;
 
 void power_info_draw_callback(Canvas* canvas, void* context);

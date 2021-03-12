@@ -20,34 +20,17 @@ void hal_gpio_init(
     HAL_GPIO_Init(gpio->port, &GPIO_InitStruct);
 }
 
-bool hal_gpio_read_sd_detect(void) {
-    bool result = false;
-
-    // TODO open record
-    const GpioPin* sd_cs_record = &sd_cs_gpio;
-
-    // TODO: SPI manager
-    api_hal_spi_lock(sd_fast_spi.spi);
-
-    // configure pin as input
-    gpio_init_ex(sd_cs_record, GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
-    delay(1);
-
-    // if gpio_read == 0 return true else return false
-    result = !gpio_read(sd_cs_record);
-
-    // configure pin back
-    gpio_init_ex(sd_cs_record, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    gpio_write(sd_cs_record, 1);
-    delay(1);
-
-    // TODO: SPI manager
-    api_hal_spi_unlock(sd_fast_spi.spi);
-
-    return result;
-}
-
 void enable_cc1101_irq() {
     HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+}
+
+extern COMP_HandleTypeDef hcomp1;
+
+bool get_rfid_in_level() {
+    #ifdef INVERT_RFID_IN
+        return (HAL_COMP_GetOutputLevel(&hcomp1) == COMP_OUTPUT_LEVEL_LOW);
+    #else
+        return (HAL_COMP_GetOutputLevel(&hcomp1) == COMP_OUTPUT_LEVEL_HIGH);
+    #endif
 }

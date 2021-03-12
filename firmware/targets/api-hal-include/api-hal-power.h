@@ -44,6 +44,9 @@ void api_hal_power_deep_sleep();
 /* Get predicted remaining battery capacity in percents */
 uint8_t api_hal_power_get_pct();
 
+/* Get battery health state in percents */
+uint8_t api_hal_power_get_bat_health_pct();
+
 /* Get charging status */
 bool api_hal_power_is_charging();
 
@@ -79,6 +82,16 @@ float api_hal_power_get_usb_voltage();
 
 /* Get power system component state */
 void api_hal_power_dump_state(string_t buffer);
+
+/**
+ * @brief Enable 3.3v on external gpio and sd card
+ */
+void api_hal_power_enable_external_3_3v();
+
+/**
+ * @brief Disable 3.3v on external gpio and sd card
+ */
+void api_hal_power_disable_external_3_3v();
 
 #ifdef __cplusplus
 }

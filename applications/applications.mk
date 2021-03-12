@@ -32,6 +32,8 @@ BUILD_INTERFACE_PROTO = 1
 BUILD_IBUTTON = 1
 BUILD_GUI_TEST = 1
 BUILD_PASSPORT = 1
+BUILD_KEYPAD_TEST = 1
+BUILD_SUBGHZ = 1
 endif
 
 APP_NFC ?= 0
@@ -223,6 +225,19 @@ C_SOURCES	+= $(wildcard $(APP_DIR)/examples/vibro.c)
 APP_INPUT = 1
 endif
 
+APP_KEYPAD_TEST ?= 0
+ifeq ($(APP_KEYPAD_TEST), 1)
+CFLAGS		+= -DAPP_KEYPAD_TEST
+BUILD_KEYPAD_TEST = 1
+endif
+BUILD_KEYPAD_TEST ?= 0
+ifeq ($(BUILD_KEYPAD_TEST), 1)
+CFLAGS		+= -DBUILD_KEYPAD_TEST
+C_SOURCES	+= $(APP_DIR)/examples/keypad_test.c
+BUILD_KEYPAD_TEST = 1
+endif
+
+
 APP_GPIO_DEMO ?= 0
 ifeq ($(APP_GPIO_DEMO), 1)
 CFLAGS		+= -DAPP_GPIO_DEMO
@@ -287,6 +302,18 @@ BUILD_GUI_TEST ?= 0
 ifeq ($(BUILD_GUI_TEST), 1)
 CFLAGS		+= -DBUILD_GUI_TEST
 C_SOURCES	+= $(wildcard $(APP_DIR)/gui-test/*.c)
+endif
+
+APP_SUBGHZ ?= 0
+ifeq ($(APP_SUBGHZ), 1)
+CFLAGS		+= -DAPP_SUBGHZ
+BUILD_SUBGHZ = 1
+endif
+BUILD_SUBGHZ ?= 0
+ifeq ($(BUILD_SUBGHZ), 1)
+CFLAGS		+= -DBUILD_SUBGHZ
+CPP_SOURCES	+= $(wildcard $(APP_DIR)/subghz/*.cpp)
+CPP_SOURCES	+= $(wildcard $(APP_DIR)/subghz/*/*.cpp)
 endif
 
 APP_SDNFC ?= 0
