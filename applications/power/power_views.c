@@ -170,8 +170,8 @@ void power_info_draw_callback(Canvas* canvas, void* context) {
         (uint32_t)(data->voltage_gauge * 10) % 10);
     sprintf(
         health,
-        "%ld%s",
-        100 - (((data->capacity_full - data->capacity_remaining) / data->capacity_full) * 100),
+        "%d%s",
+        data->health,
         "%");
 
     draw_stat(canvas, 8, 42, batt_icon, batt_level);
