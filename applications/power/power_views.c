@@ -168,11 +168,7 @@ void power_info_draw_callback(Canvas* canvas, void* context) {
         "%ld.%01ld V",
         (uint32_t)data->voltage_gauge,
         (uint32_t)(data->voltage_gauge * 10) % 10);
-    sprintf(
-        health,
-        "%d%s",
-        data->health,
-        "%");
+    sprintf(health, "%d%s", data->health, "%");
 
     draw_stat(canvas, 8, 42, batt_icon, batt_level);
     draw_stat(canvas, 40, 42, temp_icon, temperature);
