@@ -36,12 +36,14 @@ bool dolphin_view_idle_main_input(InputEvent* event, void* context) {
     if(event->type == InputTypeLong) {
         if(event->key == InputKeyBack) {
             dolphin->locked = !dolphin->locked;
-            view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, dolphin->locked ? DolphinViewLocked : DolphinViewIdleMain);
+            view_dispatcher_switch_to_view(
+                dolphin->idle_view_dispatcher,
+                dolphin->locked ? DolphinViewLocked : DolphinViewIdleMain);
         }
     }
 
     if(event->type == InputTypeShort) {
-        if(!dolphin->locked){
+        if(!dolphin->locked) {
             if(event->key == InputKeyOk) {
                 with_value_mutex(
                     dolphin->menu_vm, (Menu * menu) { menu_ok(menu); });
@@ -52,11 +54,12 @@ bool dolphin_view_idle_main_input(InputEvent* event, void* context) {
             }
         } else {
             if(event->key == InputKeyBack) {
-                 dolphin->lock_count++;
-                 if(dolphin->lock_count == 3){
+                dolphin->lock_count++;
+                if(dolphin->lock_count == 3) {
                     dolphin->locked = false;
                     dolphin->lock_count = 0;
-                    view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, DolphinViewIdleMain);
+                    view_dispatcher_switch_to_view(
+                        dolphin->idle_view_dispatcher, DolphinViewIdleMain);
                 }
             }
         }
