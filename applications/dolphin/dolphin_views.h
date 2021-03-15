@@ -14,6 +14,7 @@ typedef enum {
     DolphinViewIdleDown,
     DolphinViewHwMismatch,
     DolphinViewLocked,
+    DolphinViewLockmenu,
 } DolphinViewIdle;
 
 typedef struct {

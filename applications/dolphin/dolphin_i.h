@@ -8,6 +8,8 @@
 #include <api-hal.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
+#include <gui/modules/submenu.h>
+
 #include <gui/canvas.h>
 #include <menu/menu.h>
 
@@ -41,6 +43,8 @@ struct Dolphin {
     View* idle_view_down;
     View* view_hw_mismatch;
     View* view_locked;
+    
+    Submenu* lock_menu;
 
     bool locked;
     uint8_t lock_count;

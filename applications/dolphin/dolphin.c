@@ -48,7 +48,7 @@ bool dolphin_view_idle_main_input(InputEvent* event, void* context) {
                 with_value_mutex(
                     dolphin->menu_vm, (Menu * menu) { menu_ok(menu); });
             } else if(event->key == InputKeyUp) {
-                view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, DolphinViewIdleUp);
+                view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, DolphinViewLockmenu);
             } else if(event->key == InputKeyDown) {
                 view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, DolphinViewIdleDown);
             }
@@ -88,6 +88,12 @@ bool dolphin_view_idle_up_input(InputEvent* event, void* context) {
     return true;
 }
 
+static void lock_screen_callback(void* context, uint32_t index) {
+    Dolphin* dolphin = context;
+    dolphin->locked = true;
+    view_dispatcher_switch_to_view(dolphin->idle_view_dispatcher, DolphinViewLocked);
+}
+
 Dolphin* dolphin_alloc() {
     Dolphin* dolphin = furi_alloc(sizeof(Dolphin));
     // Message queue
@@ -115,6 +121,16 @@ Dolphin* dolphin_alloc() {
     view_set_input_callback(dolphin->view_locked, dolphin_view_idle_main_input);
     view_dispatcher_add_view(
         dolphin->idle_view_dispatcher, DolphinViewLocked, dolphin->view_locked);
+    // Lock menu
+    dolphin->lock_menu = submenu_alloc();
+    view_dispatcher_add_view(
+        dolphin->idle_view_dispatcher, DolphinViewLockmenu, submenu_get_view(dolphin->lock_menu));
+
+
+    submenu_add_item(dolphin->lock_menu, "Lock screen", 0, lock_screen_callback, dolphin);
+    submenu_add_item(dolphin->lock_menu, "Set pin", 0, NULL, dolphin);
+    submenu_add_item(dolphin->lock_menu, "Dummy mode", 0, NULL, dolphin);
+
 
     // Main Idle View
     dolphin->idle_view_main = view_alloc();
