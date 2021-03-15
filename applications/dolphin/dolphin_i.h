@@ -43,7 +43,6 @@ struct Dolphin {
     View* idle_view_down;
     View* view_hw_mismatch;
     View* view_locked;
-    
     Submenu* lock_menu;
 
     bool locked;

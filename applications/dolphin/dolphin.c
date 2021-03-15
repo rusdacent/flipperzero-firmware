@@ -125,13 +125,9 @@ Dolphin* dolphin_alloc() {
     dolphin->lock_menu = submenu_alloc();
     view_dispatcher_add_view(
         dolphin->idle_view_dispatcher, DolphinViewLockmenu, submenu_get_view(dolphin->lock_menu));
-
-
     submenu_add_item(dolphin->lock_menu, "Lock screen", 0, lock_screen_callback, dolphin);
     submenu_add_item(dolphin->lock_menu, "Set pin", 0, NULL, dolphin);
     submenu_add_item(dolphin->lock_menu, "Dummy mode", 0, NULL, dolphin);
-
-
     // Main Idle View
     dolphin->idle_view_main = view_alloc();
     view_set_context(dolphin->idle_view_main, dolphin);
