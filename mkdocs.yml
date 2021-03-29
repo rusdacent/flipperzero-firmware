@@ -1,0 +1,13 @@
+site_name: Doxybook2 Example
+theme:
+  name: 'material'
+markdown_extensions:
+  - admonition
+nav:
+  - Home: /
+  - Classes: /Classes
+  - Namespaces: /Namespaces
+  - Modules: /Modules
+  - Files: /Files
+  - Related Pages: /Pages
+  - Examples: /Examples
