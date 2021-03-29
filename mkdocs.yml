@@ -1,4 +1,4 @@
-site_name: Doxybook2 Example
+site_name: Flipper Zero Dev
 theme:
   name: 'material'
 markdown_extensions:
