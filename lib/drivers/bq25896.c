@@ -1,23 +1,24 @@
+#include "bq25896.h"
+#include "bq25896_reg.h"
 
-#include <bq25896.h>
-#include <bq25896_reg.h>
-#include <i2c.h>
+#include <api-hal-i2c.h>
+#include <stddef.h>
 
 uint8_t bit_reverse(uint8_t b) {
-   b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-   b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-   b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-   return b;
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
 }
 
 bool bq25896_read(uint8_t address, uint8_t* data, size_t size) {
-    if (HAL_I2C_Master_Transmit(&POWER_I2C, BQ25896_ADDRESS, &address, 1, 2000) != HAL_OK) {
-        return false;
-    }
-    if (HAL_I2C_Master_Receive(&POWER_I2C, BQ25896_ADDRESS, data, size, 2000) != HAL_OK) {
-        return false;
-    }
-    return true;
+    bool ret;
+    with_api_hal_i2c(
+        bool, &ret, () {
+            return api_hal_i2c_trx(
+                POWER_I2C, BQ25896_ADDRESS, &address, 1, data, size, BQ25896_I2C_TIMEOUT);
+        });
+    return ret;
 }
 
 bool bq25896_read_reg(uint8_t address, uint8_t* data) {
@@ -26,12 +27,13 @@ bool bq25896_read_reg(uint8_t address, uint8_t* data) {
 }
 
 bool bq25896_write_reg(uint8_t address, uint8_t* data) {
-    uint8_t buffer[2] = { address, *data };
-
-    if (HAL_I2C_Master_Transmit(&POWER_I2C, BQ25896_ADDRESS, buffer, 2, 2000) != HAL_OK) {
-        return false;
-    }
-    return true;
+    uint8_t buffer[2] = {address, *data};
+    bool ret;
+    with_api_hal_i2c(
+        bool, &ret, () {
+            return api_hal_i2c_tx(POWER_I2C, BQ25896_ADDRESS, buffer, 2, BQ25896_I2C_TIMEOUT);
+        });
+    return ret;
 }
 
 typedef struct {
@@ -79,7 +81,7 @@ void bq25896_init() {
 }
 
 void bq25896_poweroff() {
-    bq25896_regs.r09.BATFET_DIS=1;
+    bq25896_regs.r09.BATFET_DIS = 1;
     bq25896_write_reg(0x09, (uint8_t*)&bq25896_regs.r09);
 }
 
@@ -101,7 +103,7 @@ void bq25896_disable_otg() {
 
 uint16_t bq25896_get_vbus_voltage() {
     bq25896_read_reg(0x11, (uint8_t*)&bq25896_regs.r11);
-    if (bq25896_regs.r11.VBUS_GD) {
+    if(bq25896_regs.r11.VBUS_GD) {
         return (uint16_t)bq25896_regs.r11.VBUSV * 100 + 2600;
     } else {
         return 0;
@@ -125,5 +127,5 @@ uint16_t bq25896_get_vbat_current() {
 
 uint32_t bq25896_get_ntc_mpct() {
     bq25896_read_reg(0x10, (uint8_t*)&bq25896_regs.r10);
-    return (uint32_t)bq25896_regs.r10.TSPCT * 465+21000;
+    return (uint32_t)bq25896_regs.r10.TSPCT * 465 + 21000;
 }

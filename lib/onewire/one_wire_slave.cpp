@@ -43,8 +43,10 @@ void OneWireSlave::attach(OneWireDevice* attached_device) {
 }
 
 void OneWireSlave::deattach(void) {
+    if(device != nullptr) {
+        device->deattach();
+    }
     device = nullptr;
-    device->deattach();
 }
 
 void OneWireSlave::set_result_callback(OneWireSlaveResultCallback result_cb, void* ctx) {
@@ -237,10 +239,11 @@ bool OneWireSlave::receive_and_process_cmd(void) {
         cmd_search_rom();
         return true;
 
+    case 0x0F:
     case 0x33:
         // READ ROM
         device->send_id();
-        return false;
+        return true;
 
     default: // Unknown command
         error = OneWireSlaveError::INCORRECT_ONEWIRE_CMD;
@@ -256,24 +259,23 @@ bool OneWireSlave::bus_start(void) {
     if(device == nullptr) {
         result = false;
     } else {
+        __disable_irq();
         pin_init_opendrain_in_isr_ctx();
         error = OneWireSlaveError::NO_ERROR;
 
         if(show_presence()) {
-            __disable_irq();
-
             // TODO think about multiple command cycles
             receive_and_process_cmd();
             result =
                 (error == OneWireSlaveError::NO_ERROR ||
                  error == OneWireSlaveError::INCORRECT_ONEWIRE_CMD);
 
-            __enable_irq();
         } else {
             result = false;
         }
 
         pin_init_interrupt_in_isr_ctx();
+        __enable_irq();
     }
 
     return result;
@@ -294,8 +296,7 @@ void OneWireSlave::exti_callback(void* _pin, void* _ctx) {
                 if(pulse_length <= OWET::RESET_MAX) {
                     // reset cycle ok
                     bool result = _this->bus_start();
-
-                    if(_this->result_cb != nullptr) {
+                    if(result && _this->result_cb != nullptr) {
                         _this->result_cb(result, _this->result_cb_ctx);
                     }
                 } else {

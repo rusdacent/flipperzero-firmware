@@ -12,17 +12,38 @@
 #include <bq27220.h>
 #include <bq25896.h>
 
-volatile uint32_t api_hal_power_insomnia = 0;
+volatile uint32_t api_hal_power_insomnia = 1;
+const ParamCEDV cedv = {
+    .full_charge_cap = 2100,
+    .design_cap = 2100,
+    .EMF = 3739,
+    .C0 = 776,
+    .C1 = 0,
+    .R1 = 193,
+    .R0 = 1,
+    .T0 = 1,
+    .TC = 11,
+    .DOD0 = 4044,
+    .DOD10 = 3899,
+    .DOD20 = 3796,
+    .DOD30 = 3704,
+    .DOD40 = 3627,
+    .DOD50 = 3573,
+    .DOD60 = 3535,
+    .DOD70 = 3501,
+    .DOD80 = 3453,
+    .DOD90 = 3366,
+    .DOD100 = 2419,
+};
 
 void HAL_RCC_CSSCallback(void) {
-    LL_RCC_ForceBackupDomainReset();
-    LL_RCC_ReleaseBackupDomainReset();
+    // TODO: notify user about issue with HSE
     NVIC_SystemReset();
 }
 
 void api_hal_power_init() {
     LL_PWR_SMPS_SetMode(LL_PWR_SMPS_STEP_DOWN);
-    bq27220_init();
+    bq27220_init(&cedv);
     bq25896_init();
 }
 
@@ -40,6 +61,10 @@ void api_hal_power_insomnia_exit() {
 
 bool api_hal_power_deep_available() {
     return api_hal_bt_is_alive() && api_hal_power_insomnia == 0;
+}
+
+void api_hal_power_light_sleep() {
+    __WFI();
 }
 
 void api_hal_power_deep_sleep() {
@@ -64,7 +89,7 @@ void api_hal_power_deep_sleep() {
     LL_HSEM_ReleaseLock(HSEM, CFG_HW_RCC_SEMID, 0);
 
     // Prepare deep sleep
-    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP2);
+    LL_PWR_SetPowerMode(LL_PWR_MODE_STOP1);
     LL_LPM_EnableDeepSleep();
 
 #if defined ( __CC_ARM)
@@ -86,8 +111,21 @@ void api_hal_power_deep_sleep() {
     LL_HSEM_ReleaseLock(HSEM, CFG_HW_RCC_SEMID, 0);
 }
 
+void api_hal_power_sleep() {
+    if(api_hal_power_deep_available()) {
+        api_hal_power_deep_sleep();
+    } else {
+        api_hal_power_light_sleep();
+    }
+}
+
+
 uint8_t api_hal_power_get_pct() {
     return bq27220_get_state_of_charge();
+}
+
+uint8_t api_hal_power_get_bat_health_pct() {
+    return bq27220_get_state_of_health();
 }
 
 bool api_hal_power_is_charging() {
@@ -146,6 +184,10 @@ float api_hal_power_get_battery_temperature(ApiHalPowerIC ic) {
     
 }
 
+float api_hal_power_get_usb_voltage(){
+    return (float)bq25896_get_vbus_voltage() / 1000.0f;
+}
+
 void api_hal_power_dump_state(string_t buffer) {
     BatteryStatus battery_status;
     OperationStatus operation_status;
@@ -175,9 +217,9 @@ void api_hal_power_dump_state(string_t buffer) {
         );
         // Voltage and current info
         string_cat_printf(buffer,
-            "bq27220: Full capacity: %dmAh, Remaining capacity: %dmAh, State of Charge: %d%%\r\n",
-            bq27220_get_full_charge_capacity(), bq27220_get_remaining_capacity(),
-            bq27220_get_state_of_charge()
+            "bq27220: Full capacity: %dmAh, Design capacity: %dmAh, Remaining capacity: %dmAh, State of Charge: %d%%, State of health: %d%%\r\n",
+            bq27220_get_full_charge_capacity(), bq27220_get_design_capacity(), bq27220_get_remaining_capacity(),
+            bq27220_get_state_of_charge(), bq27220_get_state_of_health()
         );
         string_cat_printf(buffer,
             "bq27220: Voltage: %dmV, Current: %dmA, Temperature: %dC\r\n",
@@ -191,4 +233,10 @@ void api_hal_power_dump_state(string_t buffer) {
         bq25896_get_vbat_voltage(), bq25896_get_vbat_current(),
         bq25896_get_ntc_mpct()
     );
+}
+
+void api_hal_power_enable_external_3_3v(){
+}
+
+void api_hal_power_disable_external_3_3v(){
 }

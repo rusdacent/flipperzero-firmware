@@ -2,6 +2,7 @@
 #include "power_views.h"
 
 #include <furi.h>
+#include <api-hal.h>
 
 #include <menu/menu.h>
 #include <menu/menu_item.h>
@@ -41,11 +42,10 @@ void power_draw_usb_callback(Canvas* canvas, void* context) {
 void power_draw_battery_callback(Canvas* canvas, void* context) {
     assert(context);
     Power* power = context;
-
     canvas_draw_icon(canvas, 0, 0, power->battery_icon);
     with_view_model(
         power->info_view, (PowerInfoModel * model) {
-            canvas_draw_box(canvas, 2, 2, (float)model->charge / 100 * 14, 4);
+            canvas_draw_box(canvas, 2, 2, (float)model->charge / 100 * 20, 4);
             return false;
         });
 }
@@ -129,11 +129,11 @@ Power* power_alloc() {
     view_port_set_width(power->usb_view_port, icon_get_width(power->usb_icon));
     view_port_draw_callback_set(power->usb_view_port, power_draw_usb_callback, power);
 
-    power->battery_icon = assets_icons_get(I_Battery_19x8);
+    power->battery_icon = assets_icons_get(I_Battery_26x8);
     power->battery_view_port = view_port_alloc();
+
     view_port_set_width(power->battery_view_port, icon_get_width(power->battery_icon));
     view_port_draw_callback_set(power->battery_view_port, power_draw_battery_callback, power);
-
     return power;
 }
 
@@ -143,21 +143,15 @@ void power_free(Power* power) {
 }
 
 void power_cli_poweroff(string_t args, void* context) {
-    printf("Poweroff in 3 seconds");
-    osDelay(3000);
     api_hal_power_off();
 }
 
 void power_cli_reset(string_t args, void* context) {
-    printf("NVIC System Reset in 3 seconds");
-    osDelay(3000);
     NVIC_SystemReset();
 }
 
 void power_cli_dfu(string_t args, void* context) {
-    printf("NVIC System Reset to DFU mode in 3 seconds");
     api_hal_boot_set_mode(ApiHalBootModeDFU);
-    osDelay(3000);
     NVIC_SystemReset();
 }
 
@@ -198,24 +192,25 @@ int32_t power_task(void* p) {
     with_value_mutex(
         power->menu_vm, (Menu * menu) { menu_item_add(menu, power->menu); });
 
-    api_hal_power_init();
-
     furi_record_create("power", power);
 
     while(1) {
         with_view_model(
             power->info_view, (PowerInfoModel * model) {
                 model->charge = api_hal_power_get_pct();
+                model->health = api_hal_power_get_bat_health_pct();
                 model->capacity_remaining = api_hal_power_get_battery_remaining_capacity();
                 model->capacity_full = api_hal_power_get_battery_full_capacity();
                 model->current_charger = api_hal_power_get_battery_current(ApiHalPowerICCharger);
                 model->current_gauge = api_hal_power_get_battery_current(ApiHalPowerICFuelGauge);
                 model->voltage_charger = api_hal_power_get_battery_voltage(ApiHalPowerICCharger);
                 model->voltage_gauge = api_hal_power_get_battery_voltage(ApiHalPowerICFuelGauge);
+                model->voltage_vbus = api_hal_power_get_usb_voltage();
                 model->temperature_charger =
                     api_hal_power_get_battery_temperature(ApiHalPowerICCharger);
                 model->temperature_gauge =
                     api_hal_power_get_battery_temperature(ApiHalPowerICFuelGauge);
+
                 return true;
             });
 

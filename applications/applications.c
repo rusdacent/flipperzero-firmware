@@ -31,8 +31,9 @@ int32_t music_player(void* p);
 int32_t sdnfc(void* p);
 int32_t floopper_bloopper(void* p);
 int32_t sd_filesystem(void* p);
-
+int32_t app_subghz(void* p);
 int32_t gui_test(void* p);
+int32_t keypad_test(void* p);
 
 const FlipperApplication FLIPPER_SERVICES[] = {
 #ifdef APP_CLI
@@ -56,7 +57,8 @@ const FlipperApplication FLIPPER_SERVICES[] = {
      .name = "backlight_control",
      .stack_size = 1024,
      .icon = A_Plugins_14},
-    {.app = gui_task, .name = "gui_task", .stack_size = 1024, .icon = A_Plugins_14},
+    // TODO: fix stack size when sd api will be in separate thread
+    {.app = gui_task, .name = "gui_task", .stack_size = 8192, .icon = A_Plugins_14},
 #endif
 
 #ifdef APP_MENU
@@ -65,7 +67,7 @@ const FlipperApplication FLIPPER_SERVICES[] = {
 #endif
 
 #ifdef APP_SD_FILESYSTEM
-    {.app = sd_filesystem, .name = "sd_filesystem", .stack_size = 1024, .icon = A_Plugins_14},
+    {.app = sd_filesystem, .name = "sd_filesystem", .stack_size = 4096, .icon = A_Plugins_14},
 #endif
 
 #ifdef APP_DOLPHIN
@@ -130,7 +132,7 @@ const FlipperApplication FLIPPER_SERVICES[] = {
 #endif
 
 #ifdef APP_IBUTTON
-    {.app = app_ibutton, .name = "ibutton", .stack_size = 1024, .icon = A_Plugins_14},
+    {.app = app_ibutton, .name = "ibutton", .stack_size = 4096, .icon = A_Plugins_14},
 #endif
 
 #ifdef APP_GPIO_DEMO
@@ -146,7 +148,15 @@ const FlipperApplication FLIPPER_SERVICES[] = {
 #endif
 
 #ifdef APP_GUI_TEST
-    {.app = gui_test, .name = "gui_test", .icon = A_Plugins_14},
+    {.app = gui_test, .name = "gui_test", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef APP_SUBGHZ
+    {.app = app_subghz, .name = "app_subghz", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef APP_KEYPAD_TEST
+    {.app = keypad_test, .name = "keypad_test", .icon = A_Plugins_14},
 #endif
 };
 
@@ -199,10 +209,7 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
 #endif
 
 #ifdef BUILD_VIBRO_DEMO
-    {.app = application_vibro,
-     .name = "application_vibro",
-     .stack_size = 1024,
-     .icon = A_Plugins_14},
+    {.app = application_vibro, .name = "vibro", .stack_size = 1024, .icon = A_Plugins_14},
 #endif
 
 #ifdef BUILD_MUSIC_PLAYER
@@ -218,8 +225,17 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
 #endif
 
 #ifdef BUILD_GUI_TEST
-    {.app = gui_test, .name = "gui_test", .icon = A_Plugins_14},
+    {.app = gui_test, .name = "gui_test", .stack_size = 1024, .icon = A_Plugins_14},
 #endif
+
+#ifdef BUILD_SUBGHZ
+    {.app = app_subghz, .name = "app_subghz", .stack_size = 1024, .icon = A_Plugins_14},
+#endif
+
+#ifdef BUILD_KEYPAD_TEST
+    {.app = keypad_test, .name = "keypad_test", .icon = A_Plugins_14},
+#endif
+
 };
 
 const size_t FLIPPER_PLUGINS_COUNT = sizeof(FLIPPER_PLUGINS) / sizeof(FlipperApplication);
