@@ -16,7 +16,7 @@
   ******************************************************************************
 **/
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/** Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __FF_GEN_DRV_H
 #define __FF_GEN_DRV_H
 

@@ -10,53 +10,53 @@
 extern "C" {
 #endif
 
-/* Hides drawing view_port */
+/** Hides drawing view_port */
 #define VIEW_NONE 0xFFFFFFFF
-/* Ignore navigation event */
+/** Ignore navigation event */
 #define VIEW_IGNORE 0xFFFFFFFE
-/* Deatch from gui, deallocate Views and ViewDispatcher
+/** Deatch from gui, deallocate Views and ViewDispatcher
  * BE SUPER CAREFUL, deallocation happens automatically on GUI thread
  * You ARE NOT owning ViewDispatcher and Views instances
  */
 #define VIEW_DESTROY 0xFFFFFFFA
 
-/* View Draw callback
- * @param canvas, pointer to canvas
- * @param view_model, pointer to context
+/** View Draw callback
+ * @param canvas pointer to canvas
+ * @param view_model pointer to context
  * @warning called from GUI thread
  */
 typedef void (*ViewDrawCallback)(Canvas* canvas, void* model);
 
-/* View Input callback
- * @param event, pointer to input event data
- * @param context, pointer to context
+/** View Input callback
+ * @param event pointer to input event data
+ * @param context pointer to context
  * @return true if event handled, false if event ignored
  * @warning called from GUI thread
  */
 typedef bool (*ViewInputCallback)(InputEvent* event, void* context);
 
-/* View navigation callback
+/** View navigation callback
  * @param context, pointer to context
  * @return next view id
  * @warning called from GUI thread
  */
 typedef uint32_t (*ViewNavigationCallback)(void* context);
 
-/* View callback
- * @param context, pointer to context
+/** View callback
+ * @param context pointer to context
  * @warning called from GUI thread
  */
 typedef void (*ViewCallback)(void* context);
 
-/* View model types */
+/** View model types */
 typedef enum {
-    /* Model is not allocated */
+    /** Model is not allocated */
     ViewModelTypeNone,
-    /* Model consist of atomic types and/or partial update is not critical for rendering.
+    /** Model consist of atomic types and/or partial update is not critical for rendering.
      * Lock free.
      */
     ViewModelTypeLockFree,
-    /* Model access is guarded with mutex.
+    /** Model access is guarded with mutex.
      * Locking gui thread.
      */
     ViewModelTypeLocking,
@@ -64,78 +64,78 @@ typedef enum {
 
 typedef struct View View;
 
-/* Allocate and init View
+/** Allocate and init View
  * @return pointer to View
  */
 View* view_alloc();
 
-/* Free View
+/** Free View
  * @param pointer to View
  */
 void view_free(View* view);
 
-/* Set View Draw callback
+/** Set View Draw callback
  * @param view, pointer to View
  * @param callback, draw callback
  */
 void view_set_draw_callback(View* view, ViewDrawCallback callback);
 
-/* Set View Draw callback
+/** Set View Draw callback
  * @param view, pointer to View
  * @param callback, input callback
  */
 void view_set_input_callback(View* view, ViewInputCallback callback);
 
-/* Set Navigation Previous callback
+/** Set Navigation Previous callback
  * @param view, pointer to View
  * @param callback, input callback
  */
 void view_set_previous_callback(View* view, ViewNavigationCallback callback);
 
-/* Set Navigation Next callback
+/** Set Navigation Next callback
  * @param view, pointer to View
  * @param callback, input callback
  */
 void view_set_next_callback(View* view, ViewNavigationCallback callback);
 
-/* Set Enter callback
+/** Set Enter callback
  * @param view, pointer to View
  * @param callback, callback
  */
 void view_set_enter_callback(View* view, ViewCallback callback);
 
-/* Set Exit callback
+/** Set Exit callback
  * @param view, pointer to View
  * @param callback, callback
  */
 void view_set_exit_callback(View* view, ViewCallback callback);
 
-/* Set View Draw callback
+/** Set View Draw callback
  * @param view, pointer to View
  * @param context, context for callbacks
  */
 void view_set_context(View* view, void* context);
 
-/* Allocate view model.
+/** Allocate view model.
  * @param view, pointer to View
  * @param type, View Model Type
  * @param size, size
  */
 void view_allocate_model(View* view, ViewModelType type, size_t size);
 
-/* Free view model data memory.
+/** Free view model data memory.
  * @param view, pointer to View
  */
 void view_free_model(View* view);
 
-/* Get view model data
+/** Get view model data
  * @param view, pointer to View
  * @return pointer to model data
  * @warning Don't forget to commit model changes
  */
 void* view_get_model(View* view);
 
-/* Commit view model
+/** Commit view model
  * @param view, pointer to View
  * @param update, true if you want to emit view update, false otherwise
  */
@@ -153,7 +153,7 @@ void view_commit_model(View* view, bool update);
         view_commit_model(view, update);                    \
     }
 #else
-/* 
+/** 
  * With clause for view model
  * @param view, View instance pointer
  * @param function_body a (){} lambda declaration, executed within you parent function context

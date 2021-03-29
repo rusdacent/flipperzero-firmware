@@ -10,19 +10,19 @@ typedef struct {
     const IconName icon;
 } FlipperApplication;
 
-/* Services list
+/** Services list
  * Spawned on startup
  */
 extern const FlipperApplication FLIPPER_SERVICES[];
 extern const size_t FLIPPER_SERVICES_COUNT;
 
-/* Apps list
+/** Apps list
  * Spawned by app-loader
  */
 extern const FlipperApplication FLIPPER_APPS[];
 extern const size_t FLIPPER_APPS_COUNT;
 
-/* Plugins list
+/** Plugins list
  * Spawned by app-loader
  */
 extern const FlipperApplication FLIPPER_PLUGINS[];

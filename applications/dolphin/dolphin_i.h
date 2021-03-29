@@ -55,7 +55,7 @@ const IconName idle_scenes[] = {A_Wink_128x64, A_WatchingTV_128x64};
 
 Dolphin* dolphin_alloc();
 
-/* Save Dolphin state (write to permanent memory)
+/** Save Dolphin state (write to permanent memory)
  * Thread safe
  */
 void dolphin_save(Dolphin* dolphin);

@@ -15,12 +15,12 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
-/* api data */
+/** api data */
 typedef FIL SDFile;
 typedef DIR SDDir;
 typedef FILINFO SDFileInfo;
 
-/* storage for file/directory objects*/
+/** storage for file/directory objects*/
 typedef union {
     SDFile file;
     SDDir dir;
@@ -65,7 +65,7 @@ typedef struct {
     SDFileDirStorage data;
 } FileData;
 
-/* application data */
+/** application data */
 typedef struct {
     ViewPort* view_port;
     Icon* mounted;
@@ -105,13 +105,13 @@ struct SdApp {
     string_t text_holder;
 };
 
-/* core api fns */
+/** core api fns */
 bool _fs_init(SdFsInfo* _fs_info);
 bool _fs_lock(SdFsInfo* fs_info);
 bool _fs_unlock(SdFsInfo* fs_info);
 SDError _fs_status(SdFsInfo* fs_info);
 
-/* sd api fns */
+/** sd api fns */
 bool fs_file_open(File* file, const char* path, FS_AccessMode access_mode, FS_OpenMode open_mode);
 bool fs_file_close(File* file);
 uint16_t fs_file_read(File* file, void* buff, uint16_t bytes_to_read);
@@ -123,13 +123,13 @@ uint64_t fs_file_size(File* file);
 bool fs_file_sync(File* file);
 bool fs_file_eof(File* file);
 
-/* dir api */
+/** dir api */
 bool fs_dir_open(File* file, const char* path);
 bool fs_dir_close(File* file);
 bool fs_dir_read(File* file, FileInfo* fileinfo, char* name, uint16_t name_length);
 bool fs_dir_rewind(File* file);
 
-/* common api */
+/** common api */
 FS_Error
 fs_common_info(const char* path, FileInfo* fileinfo, char* name, const uint16_t name_length);
 FS_Error fs_common_remove(const char* path);
@@ -139,6 +139,6 @@ FS_Error fs_common_mkdir(const char* path);
 FS_Error fs_common_set_time(const char* path, FileDateUnion date, FileTimeUnion time);
 FS_Error fs_get_fs_info(uint64_t* total_space, uint64_t* free_space);
 
-/* errors api */
+/** errors api */
 const char* fs_error_get_desc(FS_Error error_id);
 const char* fs_error_get_internal_desc(uint32_t internal_error_id);

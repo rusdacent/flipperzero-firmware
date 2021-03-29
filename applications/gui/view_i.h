@@ -22,26 +22,26 @@ struct View {
     void* context;
 };
 
-/* Set View dispatcher */
+/** Set View dispatcher */
 void view_set_dispatcher(View* view, ViewDispatcher* view_dispatcher);
 
-/* Unlock model */
+/** Unlock model */
 void view_unlock_model(View* view);
 
-/* Draw Callback for View dispatcher */
+/** Draw Callback for View dispatcher */
 void view_draw(View* view, Canvas* canvas);
 
-/* Input Callback for View dispatcher */
+/** Input Callback for View dispatcher */
 bool view_input(View* view, InputEvent* event);
 
-/* Previous Callback for View dispatcher */
+/** Previous Callback for View dispatcher */
 uint32_t view_previous(View* view);
 
-/* Next Callback for View dispatcher */
+/** Next Callback for View dispatcher */
 uint32_t view_next(View* view);
 
-/* Enter Callback for View dispatcher */
+/** Enter Callback for View dispatcher */
 void view_enter(View* view);
 
-/* Exit Callback for View dispatcher */
+/** Exit Callback for View dispatcher */
 void view_exit(View* view);

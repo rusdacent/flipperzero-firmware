@@ -6,19 +6,19 @@ extern "C" {
 
 #include <m-string.h>
 
-/* Cli type
+/** Cli type
  * Anonymous structure. Use cli_i.h if you need to go deeper.
  */
 typedef struct Cli Cli;
 
-/* Cli callback function pointer.
+/** Cli callback function pointer.
  * Implement this interface and use add_cli_command
  * @param args - string with what was passed after command
  * @param context - pointer to whatever you gave us on cli_add_command
  */
 typedef void (*CliCallback)(string_t args, void* context);
 
-/* Add cli command
+/** Add cli command
  * Registers you command callback
  * @param cli - pointer to cli instance
  * @param name - command name
@@ -27,7 +27,7 @@ typedef void (*CliCallback)(string_t args, void* context);
  */
 void cli_add_command(Cli* cli, const char* name, CliCallback callback, void* context);
 
-/* Read from terminal
+/** Read from terminal
  * Do it only from inside of cli call.
  * @param cli - Cli instance
  * @param buffer - pointer to buffer
@@ -36,7 +36,7 @@ void cli_add_command(Cli* cli, const char* name, CliCallback callback, void* con
  */
 size_t cli_read(Cli* cli, uint8_t* buffer, size_t size);
 
-/* Write to terminal
+/** Write to terminal
  * Do it only from inside of cli call.
  * @param cli - Cli instance
  * @param buffer - pointer to buffer
@@ -45,13 +45,13 @@ size_t cli_read(Cli* cli, uint8_t* buffer, size_t size);
  */
 void cli_write(Cli* cli, uint8_t* buffer, size_t size);
 
-/* Read character
+/** Read character
  * @param cli - Cli instance
  * @return char
  */
 char cli_getc(Cli* cli);
 
-/* New line 
+/** New line 
  * Send new ine sequence
  */
 void cli_nl();

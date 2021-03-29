@@ -9,7 +9,7 @@ extern "C" {
 
 /**
  * == ValueMutex ==
-
+ *
  * The most simple concept is ValueMutex.
  * It is wrapper around mutex and value pointer.
  * You can take and give mutex to work with value and read and write value.

@@ -49,7 +49,7 @@ struct Gui {
 
 ViewPort* gui_view_port_find_enabled(ViewPortArray_t array);
 
-/* Update GUI, request redraw
+/** Update GUI, request redraw
  * @param gui, Gui instance
  */
 void gui_update(Gui* gui);

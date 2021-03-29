@@ -12,7 +12,7 @@
 #define INPUT_LONG_PRESS_TICKS 2048
 #define INPUT_THREAD_FLAG_ISR 0x00000001
 
-/* Input pin state */
+/** Input pin state */
 typedef struct {
     const InputPin* pin;
     // State
@@ -21,7 +21,7 @@ typedef struct {
     volatile osTimerId_t press_timer;
 } InputPinState;
 
-/* Input state */
+/** Input state */
 typedef struct {
     osThreadId_t thread;
     PubSub event_pubsub;
@@ -29,8 +29,8 @@ typedef struct {
     Cli* cli;
 } Input;
 
-/* Input press timer callback */
+/** Input press timer callback */
 void input_press_timer_callback(void* arg);
 
-/* Input interrupt handler */
+/** Input interrupt handler */
 void input_isr(void* _pin, void* _ctx);

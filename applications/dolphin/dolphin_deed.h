@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-/* Countable deed that affects icounter*/
+/** Countable deed that affects icounter*/
 typedef enum {
     // iButton
     DolphinDeedIButtonRead,
