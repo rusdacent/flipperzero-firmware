@@ -1,13 +1,14 @@
 site_name: Flipper Zero Dev
+site_url: https://dev.flipperzero.one/
 theme:
   name: 'material'
 markdown_extensions:
   - admonition
 nav:
-  - Home: /
-  - Classes: /Classes
-  - Namespaces: /Namespaces
-  - Modules: /Modules
-  - Files: /Files
-  - Related Pages: /Pages
-  - Examples: /Examples
+  - Home: /index.html
+  - Classes: /Classes/index.html
+  - Namespaces: /Namespaces/index.html
+  - Modules: /Modules/index.html
+  - Files: /Files/index.html
+  - Related Pages: /Pages/index.html
+  - Examples: /Examples/index.html
