@@ -91,6 +91,7 @@ int32_t app_loader(void* p) {
             }
         });
 
+<<<<<<< HEAD
     with_value_mutex(
         menu_mutex, (Menu * menu) {
             menu_item_add(
@@ -114,6 +115,9 @@ int32_t app_loader(void* p) {
         });
 
     // plugins
+=======
+    // Plugins
+>>>>>>> c3350990c254682c2c23a1f3597e46090621e40a
     with_value_mutex(
         menu_mutex, (Menu * menu) {
             MenuItem* menu_plugins =
@@ -143,6 +147,37 @@ int32_t app_loader(void* p) {
 
             menu_item_add(menu, menu_plugins);
         });
+#ifdef APP_DEBUG
+    with_value_mutex(
+        menu_mutex, (Menu * menu) {
+            MenuItem* menu_debug =
+                menu_item_alloc_menu("Debug tools", assets_icons_get(A_Settings_14));
+
+            for(size_t i = 0; i < FLIPPER_DEBUG_APPS_COUNT; i++) {
+                // Add menu item
+                menu_item_subitem_add(
+                    menu_debug,
+                    menu_item_alloc_function(
+                        FLIPPER_DEBUG_APPS[i].name,
+                        assets_icons_get(FLIPPER_DEBUG_APPS[i].icon),
+                        app_loader_menu_callback,
+                        (void*)&FLIPPER_DEBUG_APPS[i]));
+
+                // Add cli command
+                string_t cli_name;
+                string_init_set_str(cli_name, "app_");
+                string_cat_str(cli_name, FLIPPER_DEBUG_APPS[i].name);
+                cli_add_command(
+                    state.cli,
+                    string_get_cstr(cli_name),
+                    app_loader_cli_callback,
+                    (void*)&FLIPPER_DEBUG_APPS[i]);
+                string_clear(cli_name);
+            }
+
+            menu_item_add(menu, menu_debug);
+        });
+#endif
 
     printf("[app loader] start\r\n");
 
