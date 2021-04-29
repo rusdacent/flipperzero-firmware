@@ -1,8 +1,6 @@
 #include <furi.h>
 #include <gui/gui.h>
 #include <api-hal-version.h>
-#include "dolphin/dolphin.h"
-#include "dolphin/dolphin_state.h"
 
 typedef enum {
     EventTypeTick,
@@ -16,8 +14,8 @@ typedef struct {
     EventType type;
 } AppEvent;
 
-// Moods, corresponding to butthurt level. (temp, unclear about max level)
-static const char* mood_strings[5] = {[0] = "Normal", [1] = "Ok", [2] = "Sad", [3] = "Angry"};
+typedef struct {
+} State;
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     osMessageQueueId_t event_queue = ctx;
@@ -36,15 +34,14 @@ static void render_callback(Canvas* canvas, void* ctx) {
 }
 
 int32_t passport(void* p) {
-    DolphinState _state;
+    State _state;
     ValueMutex state_mutex;
-    dolphin_state_load(&_state);
 
-    osMessageQueueId_t event_queue = osMessageQueueNew(2, sizeof(AppEvent), NULL);
+    osMessageQueueId_t event_queue = osMessageQueueNew(1, sizeof(AppEvent), NULL);
     furi_check(event_queue);
 
-    if(!init_mutex(&state_mutex, &_state, sizeof(DolphinState))) {
-        printf("[Passport] cannot create mutex\r\n");
+    if(!init_mutex(&state_mutex, &_state, sizeof(State))) {
+        printf("cannot create mutex\r\n");
         return 0;
     }
 
@@ -60,12 +57,7 @@ int32_t passport(void* p) {
     while(1) {
         osStatus_t event_status = osMessageQueueGet(event_queue, &event, NULL, 25);
         if(event_status == osOK) {
-<<<<<<< HEAD:applications/passport/passport.c
             if(event.type == EventTypeKey && event.value.input.type == InputTypeShort) {
-=======
-            if(event.type == EventTypeKey && event.value.input.type == InputTypeShort &&
-               event.value.input.key == InputKeyBack) {
->>>>>>> c3350990c254682c2c23a1f3597e46090621e40a:applications/dolphin/passport/passport.c
                 break;
             }
         }

@@ -91,7 +91,6 @@ int32_t app_loader(void* p) {
             }
         });
 
-<<<<<<< HEAD
     with_value_mutex(
         menu_mutex, (Menu * menu) {
             menu_item_add(
@@ -115,9 +114,6 @@ int32_t app_loader(void* p) {
         });
 
     // plugins
-=======
-    // Plugins
->>>>>>> c3350990c254682c2c23a1f3597e46090621e40a
     with_value_mutex(
         menu_mutex, (Menu * menu) {
             MenuItem* menu_plugins =
