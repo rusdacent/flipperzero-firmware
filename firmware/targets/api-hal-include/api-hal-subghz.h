@@ -55,7 +55,10 @@ void api_hal_subghz_write_packet(const uint8_t* data, uint8_t size);
  * @param data, pointer
  * @param size, size
  */
-void api_hal_subghz_read_packet(uint8_t* data, uint8_t size);
+
+void api_hal_subghz_flush_rx();
+
+void api_hal_subghz_read_packet(uint8_t* data, uint8_t* size);
 
 /** Shutdown
  * Issue spwd command

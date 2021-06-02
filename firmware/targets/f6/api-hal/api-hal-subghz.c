@@ -16,6 +16,7 @@ static const uint8_t api_hal_subghz_preset_ook_async_regs[][2] = {
     { CC1101_MDMCFG2,   0x30 }, // ASK/OOK, No preamble/sync
     { CC1101_PKTCTRL0,  0x32 }, // Async, no CRC, Infinite
     { CC1101_FREND0,    0x01 }, // OOK/ASK PATABLE
+    
     /* End  */
     { 0, 0 },
 };
@@ -29,6 +30,12 @@ static const uint8_t api_hal_subghz_preset_2fsk_packet_regs[][2] = {
     { CC1101_IOCFG0,    0x06 }, // GD0 as async serial data output/input
     { CC1101_FSCTRL1,   0x06 }, // Set IF 26m/2^10*2=2.2MHz
     { CC1101_MCSM0,     0x18 }, // Autocalibrate on idle to TRX, ~150us OSC guard time
+    { CC1101_PKTCTRL0,  0x05}, // Autocalibrate on idle to TRX, ~150us OSC guard time
+
+    { CC1101_TEST2,   0x81},
+    { CC1101_TEST1,   0x35},
+    { CC1101_TEST0,   0x09},
+
     /* End */
     { 0, 0 },
 };
@@ -104,8 +111,16 @@ void api_hal_subghz_write_packet(const uint8_t* data, uint8_t size) {
     api_hal_spi_device_return(device);
 }
 
-void api_hal_subghz_read_packet(uint8_t* data, uint8_t size) {
+void api_hal_subghz_flush_rx() {
+    const ApiHalSpiDevice* device = api_hal_spi_device_get(ApiHalSpiDeviceIdSubGhz);
+    cc1101_flush_rx(device);
+    api_hal_spi_device_return(device);
+}
 
+void api_hal_subghz_read_packet(uint8_t* data, uint8_t* size) {
+    const ApiHalSpiDevice* device = api_hal_spi_device_get(ApiHalSpiDeviceIdSubGhz);
+    cc1101_read_fifo(device, data, size);
+    api_hal_spi_device_return(device);
 }
 
 void api_hal_subghz_shutdown() {
@@ -135,6 +150,7 @@ void api_hal_subghz_rx() {
 
 void api_hal_subghz_tx() {
     const ApiHalSpiDevice* device = api_hal_spi_device_get(ApiHalSpiDeviceIdSubGhz);
+    cc1101_switch_to_idle(device);
     cc1101_switch_to_tx(device);
     api_hal_spi_device_return(device);
 }

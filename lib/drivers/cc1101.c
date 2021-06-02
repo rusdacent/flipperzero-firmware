@@ -3,6 +3,7 @@
 #include <api-hal-delay.h>
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 CC1101Status cc1101_strobe(const ApiHalSpiDevice* device, uint8_t strobe) {
     uint8_t tx[1] = { strobe };
@@ -149,23 +150,52 @@ void cc1101_set_pa_table(const ApiHalSpiDevice* device, const uint8_t value[8]) 
 
 uint8_t cc1101_write_fifo(const ApiHalSpiDevice* device, const uint8_t* data, uint8_t size) {
     uint8_t tx = CC1101_FIFO | CC1101_BURST;
-    CC1101Status rx = { 0 };
+    // CC1101Status rx = { 0 };
+    uint8_t buff[64];
+    uint8_t buff_rx[64];
+    buff[0] = tx;
+    memcpy(&buff[1], data, size);
 
     // Start transaction
     hal_gpio_write(device->chip_select, false);
     // Wait IC to become ready
     while(hal_gpio_read(device->bus->miso));
     // Tell IC what we want
-    api_hal_spi_bus_trx(device->bus, &tx, (uint8_t*)&rx, 1, CC1101_TIMEOUT);
-    assert((rx.CHIP_RDYn) == 0);
+    api_hal_spi_bus_trx(device->bus, buff, (uint8_t*) buff_rx, size + 1, CC1101_TIMEOUT);
+    // assert((rx.CHIP_RDYn) == 0);
     // Transmit data
-    api_hal_spi_bus_tx(device->bus, (uint8_t*)data, size, CC1101_TIMEOUT);
+    // api_hal_spi_bus_tx(device->bus, (uint8_t*)data, size, CC1101_TIMEOUT);
     // Finish transaction
     hal_gpio_write(device->chip_select, true);
 
     return size;
 }
 
-uint8_t cc1101_read_fifo(const ApiHalSpiDevice* device, uint8_t* data, uint8_t size) {
-    return size;
+uint8_t cc1101_read_fifo(const ApiHalSpiDevice* device, uint8_t* data, uint8_t* size) {
+    uint8_t tx[64] = {0};
+    tx[0] = CC1101_FIFO | CC1101_READ | CC1101_BURST;
+    // uint8_t rx[2];
+
+    // Start transaction
+    hal_gpio_write(device->chip_select, false);
+    // Wait IC to become ready
+    while(hal_gpio_read(device->bus->miso));
+
+    // Read available bytes in buffer
+    uint8_t rx[2] = {};
+
+    // Tell IC what we want
+    api_hal_spi_bus_trx(device->bus, tx, rx, 2, CC1101_TIMEOUT);
+    if(rx[1] > 62) {
+        rx[1] = 62;
+    }
+
+    api_hal_spi_bus_trx(device->bus, &tx[2], data, rx[1], CC1101_TIMEOUT);
+    cc1101_switch_to_idle(device);
+    cc1101_flush_rx(device);
+    cc1101_switch_to_rx(device);
+
+    hal_gpio_write(device->chip_select, true);
+    *size = rx[1];
+    return rx[1];
 }

@@ -104,7 +104,7 @@ void api_hal_subghz_write_packet(const uint8_t* data, uint8_t size) {
     api_hal_spi_device_return(device);
 }
 
-void api_hal_subghz_read_packet(uint8_t* data, uint8_t size) {
+void api_hal_subghz_read_packet(uint8_t* data, uint8_t* size) {
 
 }
 
