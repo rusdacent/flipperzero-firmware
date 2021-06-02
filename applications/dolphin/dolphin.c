@@ -234,7 +234,13 @@ bool dolphin_view_idle_down_input(InputEvent* event, void* context) {
         } else if(event->key == InputKeyRight) {
             dolphin_deed(dolphin, DolphinDeedIButtonRead);
         } else if(event->key == InputKeyOk) {
+            NotificationApp* notifications = furi_record_open("notification");
+
             dolphin_save(dolphin);
+            notification_message(notifications, &sequence_blink_green_100);
+
+            furi_record_close("notification");
+            notifications = NULL;
         } else {
             return false;
         }

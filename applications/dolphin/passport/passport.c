@@ -6,6 +6,7 @@
 #include "math.h"
 
 #define MOODS_TOTAL 3
+#define PORTRAITS_TOTAL 3
 #define BUTTHURT_MAX 3
 
 typedef enum {
@@ -23,15 +24,15 @@ typedef struct {
 // Moods, corresponding to butthurt level. (temp, unclear about max level)
 static const char* mood_strings[MOODS_TOTAL] = {[0] = "Happy", [1] = "Ok", [2] = "Bad"};
 
-static const IconName portrait_happy[BUTTHURT_MAX] = {
+static const IconName portrait_happy[PORTRAITS_TOTAL] = {
     I_passport_happy1_43x45,
     I_passport_happy2_43x45,
     I_passport_happy3_43x45};
-static const IconName portrait_ok[BUTTHURT_MAX] = {
+static const IconName portrait_ok[PORTRAITS_TOTAL] = {
     I_passport_okay1_43x45,
     I_passport_okay2_43x45,
     I_passport_okay3_43x45};
-static const IconName portrait_bad[BUTTHURT_MAX] = {
+static const IconName portrait_bad[PORTRAITS_TOTAL] = {
     I_passport_bad1_43x45,
     I_passport_bad2_43x45,
     I_passport_bad3_43x45};
@@ -56,7 +57,7 @@ static void render_callback(Canvas* canvas, void* ctx) {
     uint32_t prev_cap = dolphin_state_xp_to_levelup(state, current_level - 1, false);
     uint32_t exp = (dolphin_state_xp_to_levelup(state, current_level, true) * 63) /
                    (dolphin_state_xp_to_levelup(state, current_level, false) - prev_cap);
-    uint8_t portrait_level = CLAMP(floor(current_level / 14), MOODS_TOTAL - 1, 0);
+    uint8_t portrait_level = CLAMP(floor(current_level / 14), PORTRAITS_TOTAL - 1, 0);
 
     canvas_clear(canvas);
 

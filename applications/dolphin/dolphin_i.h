@@ -10,6 +10,7 @@
 #include <gui/view_dispatcher.h>
 #include <gui/canvas.h>
 #include <menu/menu.h>
+#include <notification/notification-messages.h>
 
 #include <assets_icons.h>
 #include <stdint.h>
