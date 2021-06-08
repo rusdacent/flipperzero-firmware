@@ -1,3 +1,5 @@
+#include <furi/log.h>
+
 #include <api-hal-power.h>
 #include <api-hal-clock.h>
 #include <api-hal-bt.h>
@@ -10,8 +12,6 @@
 
 #include <main.h>
 #include <hw_conf.h>
-#include <bq27220.h>
-#include <bq25896.h>
 
 typedef struct {
     volatile uint32_t insomnia;
