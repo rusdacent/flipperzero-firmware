@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /** Initialize Driver */
-void bq25896_init();
+bool bq25896_init();
 
 /** Send device into shipping mode */
 void bq25896_poweroff();

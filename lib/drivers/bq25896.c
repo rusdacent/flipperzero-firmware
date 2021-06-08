@@ -62,7 +62,7 @@ typedef struct {
 
 static bq25896_regs_t bq25896_regs;
 
-void bq25896_init() {
+bool bq25896_init() {
     bq25896_regs.r14.REG_RST = 1;
     bq25896_write_reg(0x14, (uint8_t*)&bq25896_regs.r14);
 
@@ -77,7 +77,7 @@ void bq25896_init() {
     bq25896_regs.r07.WATCHDOG = WatchdogDisable;
     bq25896_write_reg(0x07, (uint8_t*)&bq25896_regs.r07);
 
-    bq25896_read(0x00, (uint8_t*)&bq25896_regs, sizeof(bq25896_regs));
+    return bq25896_read(0x00, (uint8_t*)&bq25896_regs, sizeof(bq25896_regs));
 }
 
 void bq25896_poweroff() {

@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <m-string.h>
 
+#include <bq27220.h>
+#include <bq25896.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,6 +51,9 @@ bool api_hal_power_deep_sleep_available();
 
 /** Go to sleep */
 void api_hal_power_sleep();
+
+/** Get Gauge Status */
+bool api_hal_power_gauge_get_status(OperationStatus* operation_status);
 
 /** Get predicted remaining battery capacity in percents */
 uint8_t api_hal_power_get_pct();
