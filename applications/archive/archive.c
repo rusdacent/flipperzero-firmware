@@ -254,8 +254,10 @@ static void archive_text_input_callback(void* context, char* text) {
     string_clear(buffer_src);
     string_clear(buffer_dst);
 
+    view_commit_model(archive->view_archive_main, true);
     archive_get_filenames(archive);
 }
+
 static void archive_enter_text_input(ArchiveApp* archive) {
     furi_assert(archive);
 
