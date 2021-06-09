@@ -19,7 +19,7 @@ void lp5562_reset() {
     lp5562_write_reg(0x0D, (uint8_t*)&reg);
 }
 
-void lp5562_configure() {
+bool lp5562_configure() {
     Reg08_Config config = {.INT_CLK_EN = true, .PS_EN = true, .PWM_HF = true};
     lp5562_write_reg(0x08, (uint8_t*)&config);
 
@@ -29,7 +29,7 @@ void lp5562_configure() {
         .blue = EngSelectI2C,
         .white = EngSelectI2C,
     };
-    lp5562_write_reg(0x70, (uint8_t*)&map);
+    return lp5562_write_reg(0x70, (uint8_t*)&map);
 }
 
 void lp5562_enable() {

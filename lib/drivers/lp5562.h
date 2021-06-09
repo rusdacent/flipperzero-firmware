@@ -15,7 +15,7 @@ typedef enum {
 void lp5562_reset();
 
 /** Configure Driver */
-void lp5562_configure();
+bool lp5562_configure();
 
 /** Enable Driver */
 void lp5562_enable();
