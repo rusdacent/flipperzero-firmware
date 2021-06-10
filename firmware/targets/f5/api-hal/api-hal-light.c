@@ -20,7 +20,7 @@ void api_hal_light_init() {
     lp5562_set_channel_value(LP5562ChannelWhite, 0x00);
 
     lp5562_enable();
-    lp5562_configure();
+    FURI_LOG_I("FURI_HAL", "LP5562 %s", lp5562_configure() ? "OK" : "FAIL");
 }
 
 void api_hal_light_set(Light light, uint8_t value) {

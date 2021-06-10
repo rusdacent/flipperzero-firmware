@@ -4,6 +4,8 @@
 static bool dev_is_found = false;
 const uint32_t clocks_in_ms = 64 * 1000;
 
+
+
 ReturnCode api_hal_nfc_init() {
     // Check if Nfc worker was started
     if(rfalNfcGetState() > RFAL_NFC_STATE_NOTINIT) {

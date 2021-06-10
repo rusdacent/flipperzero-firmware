@@ -67,8 +67,8 @@ void HAL_RCC_CSSCallback(void) {
 
 void api_hal_power_init() {
     LL_PWR_SMPS_SetMode(LL_PWR_SMPS_STEP_DOWN);
-    bq27220_init(&cedv);
-    bq25896_init();
+    FURI_LOG_W("FURI_HAL", "GAUGE: %s", bq27220_init(&cedv) ? "OK" : "FAIL");
+    FURI_LOG_W("FURI_HAL", "CHARGER: %s", bq25896_init() ? "OK" : "FAIL");
 }
 
 uint16_t api_hal_power_insomnia_level() {
@@ -145,10 +145,6 @@ void api_hal_power_sleep() {
     } else {
         api_hal_power_light_sleep();
     }
-}
-
-bool api_hal_power_gauge_get_status(OperationStatus* operation_status){
-    return bq27220_get_operation_status(operation_status) == BQ27220_SUCCESS;
 }
 
 uint8_t api_hal_power_get_pct() {
@@ -228,7 +224,7 @@ void api_hal_power_dump_state() {
     OperationStatus operation_status;
     if (bq27220_get_battery_status(&battery_status) == BQ27220_ERROR){
         FURI_LOG_I("FURI_HAL", "BQ27220: No battery connected.\r\n");
-    } else if (!api_hal_power_gauge_get_status(&operation_status)){
+    } else if (!bq27220_get_operation_status(&operation_status) != BQ27220_SUCCESS){
         FURI_LOG_I("FURI_HAL", "BQ27220: Communication error.\r\n");
     } else {
         printf(

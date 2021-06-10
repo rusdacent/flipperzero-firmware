@@ -20,5 +20,5 @@ void api_hal_init() {
     api_hal_vibro_init();
     FURI_LOG_I("FURI_HAL", "VIBRO OK");
     api_hal_subghz_init();
-    FURI_LOG_I("FURI_HAL", "SUBGHZ %d", api_hal_subghz_get_status());
+    FURI_LOG_I("FURI_HAL", "SUBGHZ OK");
 }
