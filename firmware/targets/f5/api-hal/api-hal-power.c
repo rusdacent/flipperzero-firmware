@@ -224,7 +224,7 @@ void api_hal_power_dump_state() {
     OperationStatus operation_status;
     if (bq27220_get_battery_status(&battery_status) == BQ27220_ERROR){
         FURI_LOG_I("FURI_HAL", "BQ27220: No battery connected.\r\n");
-    } else if (!bq27220_get_operation_status(&operation_status) != BQ27220_SUCCESS){
+    } else if (bq27220_get_operation_status(&operation_status) != BQ27220_SUCCESS){
         FURI_LOG_I("FURI_HAL", "BQ27220: Communication error.\r\n");
     } else {
         printf(
