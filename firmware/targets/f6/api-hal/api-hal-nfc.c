@@ -91,7 +91,6 @@ bool api_hal_nfc_detect(rfalNfcDevice **dev_list, uint8_t* dev_cnt, uint32_t cyc
 
 bool api_hal_nfc_listen(uint32_t timeout) {
     api_hal_nfc_exit_sleep();
-    rfalLowPowerModeStop();
 
     rfalNfcState state = rfalNfcGetState();
     if(state == RFAL_NFC_STATE_NOTINIT) {
@@ -132,6 +131,7 @@ bool api_hal_nfc_listen(uint32_t timeout) {
             return false;
         }
         if(state == RFAL_NFC_STATE_LISTEN_ACTIVATION) {
+            start = DWT->CYCCNT;
             continue;
         }
         taskYIELD();
