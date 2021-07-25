@@ -183,6 +183,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: artifacts/*
+          prerelease: endsWith(github.ref, '-rc') == true
 
       - name: 'Trigger update server reindex'
         uses: wei/curl@master
