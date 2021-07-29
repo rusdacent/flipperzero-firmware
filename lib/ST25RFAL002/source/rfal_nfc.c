@@ -1589,6 +1589,11 @@ static ReturnCode rfalNfcListenActivation( void )
             
             if( isDataRcvd )                                                          /* Check if Reader/Initator has sent some data */
             {
+                printf("Data received\r\n");
+                for(uint16_t i = 0; i < gNfcDev.rxLen; i++) {
+                    printf("%02X ", gNfcDev.rxBuf.rfBuf[i]);
+                }
+                printf("\r\n");
                 /* Check if received data is a Sleep request */
                 if( rfalNfcaListenerIsSleepReq( gNfcDev.rxBuf.rfBuf, rfalConvBitsToBytes(gNfcDev.rxLen)) )     /* Check if received data is a SLP_REQ */
                 {
@@ -1600,6 +1605,7 @@ static ReturnCode rfalNfcListenActivation( void )
                 /* Check if received data is a valid RATS */
                 else if( rfalIsoDepIsRats( gNfcDev.rxBuf.rfBuf, (uint8_t)rfalConvBitsToBytes(gNfcDev.rxLen) ) )
                 {
+                    printf("Iso dep found\r\n");
                     rfalIsoDepAtsParam        atsParam;
                     rfalIsoDepListenActvParam rxParam;
                     
