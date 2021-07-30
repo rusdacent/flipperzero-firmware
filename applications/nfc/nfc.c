@@ -1,5 +1,6 @@
 #include "nfc_i.h"
 #include "api-hal-nfc.h"
+#include <emv_decoder.h>
 
 osMessageQueueId_t message_queue = NULL;
 
@@ -191,9 +192,93 @@ void nfc_cli_detect(Cli* cli, string_t args, void* context) {
     }
 }
 
+#define NFC_WORKER_TAG "EMV emulation"
+
+void nfc_cli_emulate_uid(Cli* cli, string_t args, void* context) {
+    // Check if nfc worker is not busy
+    if(api_hal_nfc_is_busy()) {
+        printf("Nfc is busy");
+        return;
+    }
+    api_hal_nfc_init();
+    api_hal_nfc_exit_sleep();
+    printf("Emulating uid...\r\nPress Ctrl+C to abort\r\n");
+    while(!cli_cmd_interrupt_received(cli)) {
+        api_hal_nfc_listen(500);
+        osDelay(50);
+    }
+    api_hal_nfc_deactivate();
+}
+
+void nfc_cli_emulate_emv(Cli* cli, string_t args, void* context) {
+    // Check if nfc worker is not busy
+    if(api_hal_nfc_is_busy()) {
+        printf("Nfc is busy");
+        return;
+    }
+    ReturnCode err;
+    uint8_t tx_buff[255] = {};
+    uint16_t tx_len = 0;
+    uint8_t* rx_buff;
+    uint16_t* rx_len;
+
+    while(!cli_cmd_interrupt_received(cli)) {
+
+        // Emulate EMV
+        if(api_hal_nfc_listen(1000)) {
+            FURI_LOG_I(NFC_WORKER_TAG, "POS terminal detected");
+            // Read data from POS terminal
+            err = api_hal_nfc_data_exchange(NULL, 0, &rx_buff, &rx_len, false);
+            if(err == ERR_NONE) {
+                FURI_LOG_I(NFC_WORKER_TAG, "Received Select PPSE");
+            } else {
+                FURI_LOG_E(NFC_WORKER_TAG, "Error in 1st data exchange: select PPSE");
+                api_hal_nfc_deactivate();
+                continue;
+            }
+            FURI_LOG_I(NFC_WORKER_TAG, "Transive SELECT PPSE ANS");
+            tx_len = emv_select_ppse_ans(tx_buff);
+            err = api_hal_nfc_data_exchange(tx_buff, tx_len, &rx_buff, &rx_len, false);
+            if(err == ERR_NONE) {
+                FURI_LOG_I(NFC_WORKER_TAG, "Received Select APP");
+            } else {
+                FURI_LOG_E(NFC_WORKER_TAG, "Error in 2nd data exchange: select APP");
+                api_hal_nfc_deactivate();
+                continue;
+            }
+
+            FURI_LOG_I(NFC_WORKER_TAG, "Transive SELECT APP ANS");
+            tx_len = emv_select_app_ans(tx_buff);
+            err = api_hal_nfc_data_exchange(tx_buff, tx_len, &rx_buff, &rx_len, false);
+            if(err == ERR_NONE) {
+                FURI_LOG_I(NFC_WORKER_TAG, "Received PDOL");
+            } else {
+                FURI_LOG_E(NFC_WORKER_TAG, "Error in 3rd data exchange: receive PDOL");
+                api_hal_nfc_deactivate();
+                continue;
+            }
+
+            FURI_LOG_I(NFC_WORKER_TAG, "Transive PDOL ANS");
+            tx_len = emv_get_proc_opt_ans(tx_buff);
+            err = api_hal_nfc_data_exchange(tx_buff, tx_len, &rx_buff, &rx_len, false);
+            if(err == ERR_NONE) {
+                FURI_LOG_I(NFC_WORKER_TAG, "Received PDOL");
+            }
+            api_hal_nfc_deactivate();
+        } else {
+            FURI_LOG_W(NFC_WORKER_TAG, "Can't find reader");
+        }
+        osDelay(20);
+    }
+    api_hal_nfc_deactivate();
+
+}
+
 void nfc_cli_init() {
     Cli* cli = furi_record_open("cli");
     cli_add_command(cli, "nfc_detect", nfc_cli_detect, NULL);
+    cli_add_command(cli, "nfc_uid", nfc_cli_emulate_uid, NULL);
+    cli_add_command(cli, "nfc_emv", nfc_cli_emulate_emv, NULL);
     furi_record_close("cli");
 }
 
