@@ -5,10 +5,9 @@
 #include <furi-hal.h>
 
 void power_cli_poweroff(Cli* cli, string_t args, void* context) {
-    power_off();
+    Power* power = furi_record_open("power");
     printf("It's now safe to disconnect USB from your flipper\r\n");
-    while(cli_getc(cli)) {
-    }
+    power_off(power);
 }
 
 void power_cli_reboot(Cli* cli, string_t args, void* context) {
@@ -17,18 +16,6 @@ void power_cli_reboot(Cli* cli, string_t args, void* context) {
 
 void power_cli_dfu(Cli* cli, string_t args, void* context) {
     power_reboot(PowerBootModeDfu);
-}
-
-void power_cli_factory_reset(Cli* cli, string_t args, void* context) {
-    printf("All data will be lost. Are you sure (y/n)?\r\n");
-    char c = cli_getc(cli);
-    if(c == 'y' || c == 'Y') {
-        printf("Data will be wiped after reboot.\r\n");
-        furi_hal_boot_set_flags(FuriHalBootFlagFactoryReset);
-        power_reboot(PowerBootModeNormal);
-    } else {
-        printf("Safe choice.\r\n");
-    }
 }
 
 void power_cli_info(Cli* cli, string_t args, void* context) {
@@ -60,8 +47,6 @@ void power_cli_init() {
 
     cli_add_command(cli, "poweroff", CliCommandFlagParallelSafe, power_cli_poweroff, NULL);
     cli_add_command(cli, "reboot", CliCommandFlagParallelSafe, power_cli_reboot, NULL);
-    cli_add_command(
-        cli, "factory_reset", CliCommandFlagParallelSafe, power_cli_factory_reset, NULL);
     cli_add_command(cli, "dfu", CliCommandFlagParallelSafe, power_cli_dfu, NULL);
     cli_add_command(cli, "power_info", CliCommandFlagParallelSafe, power_cli_info, NULL);
     cli_add_command(cli, "power_otg", CliCommandFlagParallelSafe, power_cli_otg, NULL);

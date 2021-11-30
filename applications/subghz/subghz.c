@@ -1,4 +1,5 @@
 #include "subghz_i.h"
+#include <lib/toolbox/path.h>
 
 const char* const subghz_frequencies_text[] = {
     "300.00",
@@ -119,6 +120,9 @@ SubGhz* subghz_alloc() {
     view_dispatcher_add_view(
         subghz->view_dispatcher, SubGhzViewWidget, widget_get_view(subghz->widget));
 
+    //Dialog
+    subghz->dialogs = furi_record_open("dialogs");
+
     // Transmitter
     subghz->subghz_transmitter = subghz_transmitter_alloc();
     view_dispatcher_add_view(
@@ -132,6 +136,20 @@ SubGhz* subghz_alloc() {
         subghz->view_dispatcher,
         SubGhzViewVariableItemList,
         variable_item_list_get_view(subghz->variable_item_list));
+
+    // Frequency Analyzer
+    subghz->subghz_frequency_analyzer = subghz_frequency_analyzer_alloc();
+    view_dispatcher_add_view(
+        subghz->view_dispatcher,
+        SubGhzViewFrequencyAnalyzer,
+        subghz_frequency_analyzer_get_view(subghz->subghz_frequency_analyzer));
+
+    // Read RAW
+    subghz->subghz_read_raw = subghz_read_raw_alloc();
+    view_dispatcher_add_view(
+        subghz->view_dispatcher,
+        SubGhzViewReadRAW,
+        subghz_read_raw_get_view(subghz->subghz_read_raw));
 
     // Carrier Test Module
     subghz->subghz_test_carrier = subghz_test_carrier_alloc();
@@ -160,6 +178,7 @@ SubGhz* subghz_alloc() {
     subghz->txrx->preset = FuriHalSubGhzPresetOok650Async;
     subghz->txrx->txrx_state = SubGhzTxRxStateSleep;
     subghz->txrx->hopper_state = SubGhzHopperStateOFF;
+    subghz->txrx->rx_key_state = SubGhzRxKeyStateIDLE;
     subghz->txrx->history = subghz_history_alloc();
     subghz->txrx->worker = subghz_worker_alloc();
     subghz->txrx->parser = subghz_parser_alloc();
@@ -173,7 +192,9 @@ SubGhz* subghz_alloc() {
     string_init(subghz->error_str);
 
     subghz_parser_load_keeloq_file(subghz->txrx->parser, "/ext/subghz/keeloq_mfcodes");
-    subghz_parser_load_nice_flor_s_file(subghz->txrx->parser, "/ext/subghz/nice_floor_s_rx");
+    subghz_parser_load_keeloq_file(subghz->txrx->parser, "/ext/subghz/keeloq_mfcodes_user");
+    subghz_parser_load_nice_flor_s_file(subghz->txrx->parser, "/ext/subghz/nice_flor_s_rx");
+    subghz_parser_load_came_atomo_file(subghz->txrx->parser, "/ext/subghz/came_atomo");
 
     //subghz_parser_enable_dump_text(subghz->protocol, subghz_text_callback, subghz);
 
@@ -207,6 +228,9 @@ void subghz_free(SubGhz* subghz) {
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewWidget);
     widget_free(subghz->widget);
 
+    //Dialog
+    furi_record_close("dialogs");
+
     // Transmitter
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewTransmitter);
     subghz_transmitter_free(subghz->subghz_transmitter);
@@ -214,6 +238,14 @@ void subghz_free(SubGhz* subghz) {
     // Variable Item List
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewVariableItemList);
     variable_item_list_free(subghz->variable_item_list);
+
+    // Frequency Analyzer
+    view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewFrequencyAnalyzer);
+    subghz_frequency_analyzer_free(subghz->subghz_frequency_analyzer);
+
+    // Read RAW
+    view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewReadRAW);
+    subghz_read_raw_free(subghz->subghz_read_raw);
 
     // Submenu
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewMenu);
@@ -255,12 +287,24 @@ int32_t subghz_app(void* p) {
 
     // Check argument and run corresponding scene
     if(p && subghz_key_load(subghz, p)) {
+        string_t filename;
+        string_init(filename);
+
+        path_extract_filename_no_ext(p, filename);
+        strlcpy(
+            subghz->file_name, string_get_cstr(filename), strlen(string_get_cstr(filename)) + 1);
+        string_clear(filename);
+
         scene_manager_next_scene(subghz->scene_manager, SubGhzSceneTransmitter);
     } else {
         scene_manager_next_scene(subghz->scene_manager, SubGhzSceneStart);
     }
 
+    furi_hal_power_suppress_charge_enter();
+
     view_dispatcher_run(subghz->view_dispatcher);
+
+    furi_hal_power_suppress_charge_exit();
 
     subghz_free(subghz);
 

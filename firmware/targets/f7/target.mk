@@ -24,6 +24,8 @@ LDFLAGS			+= $(MCU_FLAGS) -specs=nosys.specs -specs=nano.specs
 CPPFLAGS		+= -fno-rtti -fno-use-cxa-atexit -fno-exceptions 
 LDFLAGS			+= -Wl,--start-group -lstdc++ -lsupc++ -Wl,--end-group
 
+HARDWARE_TARGET = 7
+
 MXPROJECT_DIR = $(TARGET_DIR)
 
 # Entry Point
@@ -38,6 +40,7 @@ CFLAGS += \
 CFLAGS += \
 	-I$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Inc \
 	-I$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Inc/Legacy \
+	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST \
 	-I$(CUBE_DIR)/Drivers/CMSIS/Device/ST/STM32WBxx/Include \
 	-I$(CUBE_DIR)/Drivers/CMSIS/Include
 C_SOURCES += \
@@ -46,8 +49,6 @@ C_SOURCES += \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_cortex.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_cryp.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_exti.c \
-	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash.c \
-	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash_ex.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_gpio.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_hsem.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_ipcc.c \
@@ -69,7 +70,7 @@ C_SOURCES += \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_spi.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_tim.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usart.c \
-	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.c \
+	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_lpuart.c \
 	$(CUBE_DIR)/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_utils.c
 
 # FreeRTOS
@@ -116,22 +117,20 @@ C_SOURCES += \
 	$(CUBE_DIR)/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl_if.c \
 	$(CUBE_DIR)/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci/shci.c
 
-# USB glue 
+# USB stack
 CFLAGS += \
-	-I$(TARGET_DIR)/usb-glue \
-	-I$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
-	-I$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-C_SOURCES += \
-	$(wildcard $(TARGET_DIR)/usb-glue/*.c) \
-	$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
-	$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-	$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
-	$(CUBE_DIR)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
+	-DSTM32WB \
+	-DUSB_PMASIZE=0x400
 
 # Furi HAL
 FURI_HAL_OS_DEBUG ?= 0
 ifeq ($(FURI_HAL_OS_DEBUG), 1)
 CFLAGS += -DFURI_HAL_OS_DEBUG
+endif
+
+FURI_HAL_USB_VCP_DEBUG ?= 0
+ifeq ($(FURI_HAL_USB_VCP_DEBUG), 1)
+CFLAGS += -DFURI_HAL_USB_VCP_DEBUG
 endif
 
 FURI_HAL_SUBGHZ_TX_GPIO ?= 0
@@ -150,16 +149,16 @@ C_SOURCES += $(wildcard $(FURI_HAL_DIR)/*.c)
 # Other
 CFLAGS += \
 	-I$(MXPROJECT_DIR)/Inc \
-	-I$(MXPROJECT_DIR)/Src/fatfs
+	-I$(MXPROJECT_DIR)/fatfs
 C_SOURCES += \
 	$(wildcard $(MXPROJECT_DIR)/Src/*.c) \
-	$(wildcard $(MXPROJECT_DIR)/Src/fatfs/*.c)
+	$(wildcard $(MXPROJECT_DIR)/fatfs/*.c)
 
 # Linker options
 ifeq ($(NO_BOOTLOADER), 1)
-LDFLAGS += -T$(MXPROJECT_DIR)/stm32wb55xx_flash_cm4_no_boot.ld
+LDFLAGS += -T$(MXPROJECT_DIR)/stm32wb55xx_flash_cm4_no_bootloader.ld
 else
-LDFLAGS += -T$(MXPROJECT_DIR)/stm32wb55xx_flash_cm4_boot.ld
+LDFLAGS += -T$(MXPROJECT_DIR)/stm32wb55xx_flash_cm4_with_bootloader.ld
 endif
 
 SVD_FILE = ../debug/STM32WB55_CM4.svd

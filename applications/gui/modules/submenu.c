@@ -1,22 +1,21 @@
 #include "submenu.h"
-#include "gui/canvas.h"
+
 #include <m-array.h>
-#include <furi.h>
 #include <gui/elements.h>
-#include <stdint.h>
-
-struct SubmenuItem {
-    const char* label;
-    uint32_t index;
-    SubmenuItemCallback callback;
-    void* callback_context;
-};
-
-ARRAY_DEF(SubmenuItemArray, SubmenuItem, M_POD_OPLIST);
+#include <furi.h>
 
 struct Submenu {
     View* view;
 };
+
+typedef struct {
+    const char* label;
+    uint32_t index;
+    SubmenuItemCallback callback;
+    void* callback_context;
+} SubmenuItem;
+
+ARRAY_DEF(SubmenuItemArray, SubmenuItem, M_POD_OPLIST);
 
 typedef struct {
     SubmenuItemArray_t items;
@@ -149,7 +148,7 @@ View* submenu_get_view(Submenu* submenu) {
     return submenu->view;
 }
 
-SubmenuItem* submenu_add_item(
+void submenu_add_item(
     Submenu* submenu,
     const char* label,
     uint32_t index,
@@ -168,8 +167,6 @@ SubmenuItem* submenu_add_item(
             item->callback_context = callback_context;
             return true;
         });
-
-    return item;
 }
 
 void submenu_clean(Submenu* submenu) {
@@ -177,7 +174,7 @@ void submenu_clean(Submenu* submenu) {
 
     with_view_model(
         submenu->view, (SubmenuModel * model) {
-            SubmenuItemArray_clean(model->items);
+            SubmenuItemArray_reset(model->items);
             model->position = 0;
             model->window_position = 0;
             model->header = NULL;

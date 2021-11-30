@@ -7,6 +7,7 @@ enum SubmenuIndex {
     SubmenuIndexNiceFlo24bit,
     SubmenuIndexCAME12bit,
     SubmenuIndexCAME24bit,
+    SubmenuIndexCAMETwee,
     SubmenuIndexNeroSketch,
     SubmenuIndexNeroRadio,
     SubmenuIndexGateTX,
@@ -60,6 +61,12 @@ void subghz_scene_set_type_on_enter(void* context) {
         subghz->submenu,
         "CAME 24bit_433",
         SubmenuIndexCAME24bit,
+        subghz_scene_set_type_submenu_callback,
+        subghz);
+    submenu_add_item(
+        subghz->submenu,
+        "CAME TWEE",
+        SubmenuIndexCAMETwee,
         subghz_scene_set_type_submenu_callback,
         subghz);
     // submenu_add_item(
@@ -132,6 +139,15 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
                 generated_protocol = true;
             }
             break;
+        case SubmenuIndexCAMETwee:
+            if(subghz_scene_set_type_submenu_to_find_protocol(subghz, "CAME TWEE")) {
+                subghz->txrx->protocol_result->code_last_count_bit = 54;
+                key = (key & 0x0FFFFFF0);
+                subghz->txrx->protocol_result->code_last_found = 0x003FFF7200000000 |
+                                                                 (key ^ 0xE0E0E0EE);
+                generated_protocol = true;
+            }
+            break;
         // case SubmenuIndexNeroSketch:
         //     /* code */
         //     break;
@@ -174,6 +190,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
         if(generated_protocol) {
             subghz->txrx->frequency = subghz_frequencies[subghz_frequencies_433_92];
             subghz->txrx->preset = FuriHalSubGhzPresetOok650Async;
+            subghz_file_name_clear(subghz);
             scene_manager_next_scene(subghz->scene_manager, SubGhzSceneSaveName);
             return true;
         }

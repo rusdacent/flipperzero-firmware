@@ -26,6 +26,8 @@
 
 #include <nfc/scenes/nfc_scene.h>
 
+#define NFC_SEND_NOTIFICATION_FALSE (0UL)
+#define NFC_SEND_NOTIFICATION_TRUE (1UL)
 #define NFC_TEXT_STORE_SIZE 128
 
 struct Nfc {
@@ -34,7 +36,7 @@ struct Nfc {
     Gui* gui;
     NotificationApp* notifications;
     SceneManager* scene_manager;
-    NfcDevice dev;
+    NfcDevice* dev;
     NfcDeviceCommonData dev_edit_data;
 
     char text_store[NFC_TEXT_STORE_SIZE + 1];

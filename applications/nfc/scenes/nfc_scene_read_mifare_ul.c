@@ -1,6 +1,6 @@
 #include "../nfc_i.h"
 
-#define NFC_READ_MIFARE_UL_CUSTOM_EVENT (0UL)
+#define NFC_READ_MIFARE_UL_CUSTOM_EVENT (10UL)
 
 void nfc_read_mifare_ul_worker_callback(void* context) {
     Nfc* nfc = (Nfc*)context;
@@ -20,7 +20,7 @@ void nfc_scene_read_mifare_ul_on_enter(void* context) {
     nfc_worker_start(
         nfc->worker,
         NfcWorkerStateReadMifareUl,
-        &nfc->dev.dev_data,
+        &nfc->dev->dev_data,
         nfc_read_mifare_ul_worker_callback,
         nfc);
 }

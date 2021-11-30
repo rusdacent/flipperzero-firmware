@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <furi/pubsub.h>
+#include <stdbool.h>
 
 typedef struct Power Power;
 
@@ -46,7 +47,7 @@ typedef struct {
 
 /** Power off device
  */
-void power_off();
+void power_off(Power* power);
 
 /** Reboot device
  * @param mode - PowerBootMode
@@ -62,4 +63,6 @@ void power_get_info(Power* power, PowerInfo* info);
 /** Get power event pubsub handler
  * @param power - Power instance
  */
-PubSub* power_get_pubsub(Power* power);
+FuriPubSub* power_get_pubsub(Power* power);
+
+bool power_is_battery_well(PowerInfo* info);
